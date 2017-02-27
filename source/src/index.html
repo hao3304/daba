@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>大坝分布</title>
+    <link rel="shortcut icon" href="/static/images/favicon.png" />
+    <link rel="bookmark" href="/static/images/favicon.png" type="image/x-icon"　/>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div  id="app" class=" sidebar-mini  sidebar-collapse ">
+    <div class="wrap">
+        <slider   @change="onRoute" ></slider>
+        <section>
+            <cheader ></cheader>
+            <div class="main">
+                <div style="position:relative;height: 100%">
+                        <router-view style="position:absolute;width:100%" ></router-view>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>
+<script src="/static/js/mod.js"></script>
+<script src="/static/js/jquery.js"></script>
+<script src="/static/js/slimScroll/jquery.slimscroll.js"></script>
+<script src="/static/js/layer/layer.js"></script>
+<script>
+ require('./app.js');
+</script>

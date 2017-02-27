@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>度量云管理后台</title>
+    <link rel="shortcut icon" href="/static/images/favicon.png" />
+    <link rel="bookmark" href="/static/images/favicon.png" type="image/x-icon"　/>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .dam-info{
+            margin:0;
+            font-size: 14px;
+            color: #333;
+            max-height: 260px;
+            width:350px;
+            overflow-y: auto;
+        }
+        .dam-info h5{
+            margin:5px 0px;
+            font-size: 14px;
+        }
+        .dam-info h5:first-child{
+            text-align: center;
+        }
+
+        .dam-detail .el-tabs__header{
+           margin-bottom: 5px;
+        }
+
+        .dam-info-table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        .dam-info-table tr{
+            height:28px;
+        }
+        .dam-info-table tr td{
+            border:1px solid #c4e7f3;
+            font-size: 12px;
+        }
+        .el-radio-button__orig-radio:checked+.el-radio-button__inner {
+            color: #fff;
+            background-color: #20a0ff;
+            border-color: #20a0ff;
+        }
+
+    </style>
+</head>
+<body>
+<div  id="app" class="dam-detail">
+    <div v-show="loading" style="text-align: center;font-size: 20px;color: #0099cc;"><i class="el-icon-loading"></i></div>
+    <el-tabs v-show="!loading" style="display: none" v-model="tab" >
+        <el-tab-pane label="注册定检" name="first">
+            <div class="dam-info" v-html="regAndCheck"></div>
+        </el-tab-pane>
+        <el-tab-pane label="电站概况" name="second">
+            <div class="dam-info">
+                <img v-if="introduction.topPicture" :src="introduction.topPicture" style="width: 100%" alt="">
+                <p v-html="introduction.introduction"></p>
+                <p style="text-align: center" v-show="!introduction.introduction">暂无信息</p>
+            </div>
+        </el-tab-pane>
+        <el-tab-pane label="列表信息" name="third">
+           <div class="dam-info" style="text-align: center">
+               <el-radio-group v-model="radio">
+                   <el-radio-button v-for="p in property" :label="p.groupName"></el-radio-button>
+               </el-radio-group>
+               <table class="dam-info-table" v-for="p in property" v-show="radio == p.groupName">
+                   <tr v-for="g in p.groupItems">
+                       <td style="width: 140px;">{{g.itemName}}</td>
+                       <td>{{g.itemValue}}</td>
+                   </tr>
+               </table>
+           </div>
+        </el-tab-pane>
+        <el-tab-pane label="电站图片" name="fourth">
+            <div class="dam-info">
+               <div  v-for="p in pic" style="position: relative">
+                   <img style="width:100%;" :src="p.pictureURL" alt="p.pictureDescription">
+                   <p style="text-align: center;margin:0;bottom:3px;line-height:28px;width:100%;left:0;position: absolute;background-color: rgba(0,0,0,.5);color: #fff;">{{p.pictureDescription}}</p>
+                   <p style="text-align: center" v-show="!p.pictureURL">暂无信息</p>
+               </div>
+            </div>
+        </el-tab-pane>
+    </el-tabs>
+    </div>
+</div>
+</body>
+</html>
+<script src="/static/js/mod.js"></script>
+<script src="/static/js/jquery.js"></script>
+<script>
+    require('./detail.js');
+</script>

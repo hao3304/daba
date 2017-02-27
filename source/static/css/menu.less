@@ -1,0 +1,38 @@
+@line-height:42px;
+
+.slider{
+  .el-menu-item, .el-submenu__title{
+    line-height:@line-height;
+    height: @line-height;
+  }
+
+  .el-menu--dark{
+    background-color: #293038;
+  }
+
+  .el-menu--dark .el-menu-item, .el-menu--dark .el-submenu__title{
+    color: #fff;
+    font-size: 14px;
+  }
+
+  .el-menu--horizontal.el-menu--dark .el-submenu .el-menu-item.is-active, .el-menu-item.is-active{
+    background-color: #0099cc;
+  }
+
+  .el-menu--dark .is-opened .el-submenu__title{
+    background-color: #22282e;
+  }
+
+  .el-menu--dark  .el-submenu__title{
+    background-color: #37424f;
+  }
+
+  .el-submenu .el-menu-item{
+    line-height: @line-height;
+    height: @line-height;
+  }
+
+  .el-menu{
+    border-right:0;
+  }
+}
