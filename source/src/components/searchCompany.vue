@@ -1,7 +1,10 @@
 <template>
     <div>
         <div class='header'>
-            <el-input size='small' placeholder='主管名称查询' v-model='query' style='width:80%;' ></el-input>
+            <el-input
+                    :icon='icons'
+                    :on-icon-click='onIconClick'
+                    size='small' placeholder='主管名称查询' v-model='query' style='width:80%;' ></el-input>
             <el-button style='float:right;color:#20a0ff;margin-top:2px;' @click='onClose' type="text" icon='circle-close'></el-button>
         </div>
         <div  class='search-company'>
@@ -30,6 +33,9 @@
             }
         },
         computed:{
+            icons(){
+                return this.query?'close':'search';
+            },
             filterData(){
                 if(this.query){
                     return this.treeData.filter((t)=>{
@@ -73,7 +79,8 @@
                 if(node.dbid){
                     this.$emit('node-click',node);
                 }
-            }
+            },
+            onIconClick(){this.query =''}
         },
         mounted(){
             $('.search-company').slimScroll({ height: document.documentElement.clientHeight - 85 });

@@ -7,12 +7,12 @@
                    <span>登录</span>
                    <el-button style="float: right;" size='small' type="text" @click='login.show = false' icon='close'></el-button>
                </div>
-               <el-form  label-width="80px">
-                   <el-form-item label="用户名" placeholder='请输入用户名' size='small' >
-                       <el-input  ></el-input>
+               <el-form ref='loginForm' :rules='rules' label-width="80px" :model='form' >
+                   <el-form-item label="用户名" prop='username' placeholder='请输入用户名' size='small' >
+                       <el-input placeholder='请输入用户名' v-model='form.username' ></el-input>
                    </el-form-item>
-                   <el-form-item label="密码"  placeholder='请输入密码' >
-                       <el-input type="password"  ></el-input>
+                   <el-form-item label="密码" prop='password'  >
+                       <el-input type="password" v-model='form.password' placeholder='请输入密码' ></el-input>
                    </el-form-item>
                    <div>
                        <el-button type="primary" @click="onSubmit">马上登录</el-button>
@@ -33,7 +33,7 @@
         height:100%;
         display:table;
         background-color:rgba(0,0,0,.4);
-        z-index:20000;
+        z-index:2000;
     }
 
     .login-container{
@@ -69,13 +69,24 @@
 
 </style>
 <script>
+    import {doLogin} from '../modules/service';
 
     export default{
         store:['login'],
         data(){
             return {
-                expand:false,
-                active:'normal'
+                form:{
+                    username:'',
+                    password:''
+                },
+                rules:{
+                    username:[
+                        {required:true,message:'请输入用户名'}
+                    ],
+                    password:[
+                        {required:true,message:'请输入密码'}
+                    ]
+                }
             }
         },
         watch:{
@@ -85,7 +96,36 @@
         },
         methods:{
             onSubmit(){
-
+                this.$refs.loginForm.validate((valid)=>{
+                    if(valid){
+                        layer.load(1);
+                        doLogin(this.form).then((rep)=>{
+                        layer.closeAll();
+                            if(rep.length>0&&rep[0].realname){
+                                this.login.show = false;
+                                this.login.name = rep[0].realname;
+                                this.login.id = rep[0].userid;
+                                 this.$message({
+                                  message: `用户【${this.login.name}】登录成功`,
+                                  type: 'success'
+                                });
+                            }else{
+                                 let hint = rep[0].hint;
+                                 this.$message({
+                                  message: hint,
+                                  type: 'warning'
+                                });
+                            }
+                        })
+                    }
+                })
+            }
+        },
+        watch:{
+            'login.show'(show){
+                if(show){
+                    this.$refs.loginForm.resetFields();
+                }
             }
         }
     }

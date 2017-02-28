@@ -7,18 +7,28 @@
                       class="inline-input"
                       v-model="query"
                       size='small'
-                      icon='search'
+                      :icon='icons'
                       :fetch-suggestions="querySearch"
                       placeholder="请输入查询内容"
                       :trigger-on-focus="false"
+                      :on-icon-click="handleIconClick"
                       @select="handleSelect"
               >
               </el-autocomplete>
 
-              <el-button type='info' size='small' class='login-btn' @click='login.show = true'>
+              <el-button type='info' size='small' class='login-btn' v-if='!login.id' @click='login.show = true'>
                   <i class='fa fa-sign-in'></i>
                   登录
               </el-button>
+
+              <el-dropdown class='user-info'  v-if='login.id'>
+                  <el-button type="primary" size='small' >
+                     <i class='fa fa-user'></i> {{login.name}}<i class="el-icon-caret-bottom el-icon--right"></i>
+                  </el-button>
+                  <el-dropdown-menu slot="dropdown" size='small' >
+                      <el-dropdown-item style='font-size:12px;line-height:20px;'>退出</el-dropdown-item>
+                  </el-dropdown-menu>
+              </el-dropdown>
 
           </div>
 </template>
@@ -28,16 +38,27 @@
         font-size:14px;
         text-decoration:none;
         margin-top: 9px;
+    }
 
+    .user-info{
+        margin-top: 6px;
+        float:right;
     }
 </style>
 <script>
+    import { getLoginInfo } from '../modules/service';
+
     export default{
         store:['dam','search','login'],
         data(){
             return{
                 active:'',
                 query:''
+            }
+        },
+        computed:{
+            icons(){
+                return this.query?'close':'search';
             }
         },
         methods:{
@@ -61,12 +82,23 @@
             },
             handleSelect(v){
                   this.search = {...v};
+            },
+            handleIconClick(){
+                this.query = '';
             }
         },
         watch:{
             navs:function () {
                 this.active = this.navs[this.navs.length-1].Id;
             }
+        },
+        mounted(){
+            getLoginInfo().then((rep)=>{
+                let result = JSON.parse(rep);
+                if(result){
+                    this.login = {...{name:result.realname,id:result.userid}};
+                }
+            })
         }
     }
 </script>

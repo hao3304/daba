@@ -106,7 +106,7 @@
 </style>
 <script>
     import L from 'leaflet';
-    import 'leaflet.chinesetmsproviders';
+    import '../components/leaflet.chinese';
     import { getDma } from '../modules/service';
     window.Spinner = require('spin');
     require('leaflet-spin')(L);
@@ -168,8 +168,8 @@
 
                 this.normal = L.tileLayer.chinaProvider('GaoDe.Normal.Map',{maxZoom:18,minZoom:2}).addTo(this.map);
                 this.earth =new L.layerGroup();
-                L.tileLayer.chinaProvider('GaoDe.Satellite.Map',{maxZoom:18,minZoom:2}).addTo(this.earth);
-                L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion',{maxZoom:18,minZoom:2}).addTo(this.earth);
+                L.tileLayer.chinaProvider('Google.Satellite.Map',{maxZoom:18,minZoom:2}).addTo(this.earth);
+               // L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion',{maxZoom:18,minZoom:2}).addTo(this.earth);
 
                 this.markerLayers = new L.markerClusterGroup().addTo(this.map);
                 this.measureLayers = new L.featureGroup().addTo(this.map);

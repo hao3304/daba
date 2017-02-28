@@ -1,5 +1,5 @@
 <template>
-    <div class="slider " style="z-index:10000">
+    <div class="slider " style="z-index:1000">
         <div class="logo">
             <i class="fa fa-cloud"></i>
             <label>{{name}}</label>
