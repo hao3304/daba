@@ -1,15 +1,17 @@
 <template>
     <el-row style="height: 100%"  >
-        <el-col :span='left_span' class='main-wrap' v-show='left_span>0'  >
-            <search-form></search-form>
+        <el-col :span='5' class='main-wrap' v-show='container.left'  >
+            <search-form @close='onCloseLeft' v-show='container.left =="search"'></search-form>
+            <search-company @close='onCloseLeft' @node-click='flyTo' v-show='container.left =="company"'></search-company>
         </el-col>
         <el-col :span="center_span" class='main-wrap' style="height: 100%;position:relative">
             <div id="map"  style="height: 100%"></div>
-            <toolbar @toolbar-click="onToolbarClick" style="position: fixed;top:11px;right:140px;z-index: 1000;"></toolbar>
+            <toolbar @toolbar-click="onToolbarClick" class='toolbar'></toolbar>
             <clegend @change='filterDam' @tooltip-change='onTooltipChange' style="position: absolute;z-index: 1000;right: 10px;top:10px;"></clegend>
             <layer @change='onLayerChange' style="bottom: 10px;right: 10px;"></layer>
+            <login></login>
         </el-col>
-        <el-col :span='right_span'  v-show='right_span>0' class='main-wrap' >
+        <el-col :span='6'  v-show='container.right' class='main-wrap' >
             <div class='header'>
                 <span class='title'>{{rightSpan.name}}</span>
                 <el-button style='float:right;color:#20a0ff;margin-top:2px;' @click='onCloseRight' type="text" icon='circle-close'></el-button>
@@ -69,7 +71,17 @@
             margin: 5px;
         }
     }
-    
+
+    .toolbar{
+        position: fixed;top:11px;right:140px;z-index: 1000;
+    }
+
+    @media screen and (max-width:940px){
+        .toolbar{
+            top: 57px;
+            right: 45px;
+        }
+    }
 
 
     .small-table.el-table{
@@ -106,6 +118,8 @@
     import clegend from '../components/legend.vue';
     import layer from '../components/layers.vue';
     import searchForm from '../components/searchForm.vue';
+    import searchCompany from '../components/searchCompany.vue';
+    import login from '../components/login.vue';
     require('leaflet.markercluster/dist/MarkerCluster.Default.css');
 
 
@@ -117,50 +131,15 @@
             }
         },
         computed:{
-            mode(){
-                return this.container.mode;
-            },
             center_span(){
                 let span = 24;
-                switch(this.mode){
-                    case 'right':
-                    span = span - this.right_span;
-                    break;
-                    case 'center':
-                    span = 24;
-                    break;
-                    case 'left':
-                    span = span - this.left_span;
-                    break;
-                    case 'all':
-                    span = span - this.right_span - this.left_span;
+                if(this.container.left){
+                    span = span - 5;
                 }
-                return span;
-            },
-            right_span(){
-            let span = 0;
-                switch(this.mode){
-                    case 'right':
-                    case 'all':
-                    span = 6;
-                    break;
-                    case 'left':
-                    span = 0;
-                    break;
+                if(this.container.right){
+                    span = span - 6;
                 }
-                return span;
-            },
-            left_span(){
-             let span = 0;
-             switch(this.mode){
-                    case 'right':
-                    span = 0;
-                    break;
-                    case 'left':
-                    case 'all':
-                    span = 5;
-                    break;
-                }
+
                 return span;
             },
             filters(){
@@ -183,8 +162,8 @@
                     zoomControl:false,
                     editable:true
                 });
-                L.control.zoom({position:'topleft'}).addTo(this.map);
-                L.control.scale().addTo(this.map);
+                L.control.zoom({position:'bottomleft'}).addTo(this.map);
+                //L.control.scale().addTo(this.map);
                 L.control.zoomhome({position:'topleft'}).addTo(this.map);
 
                 this.normal = L.tileLayer.chinaProvider('GaoDe.Normal.Map',{maxZoom:18,minZoom:2}).addTo(this.map);
@@ -192,7 +171,7 @@
                 L.tileLayer.chinaProvider('GaoDe.Satellite.Map',{maxZoom:18,minZoom:2}).addTo(this.earth);
                 L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion',{maxZoom:18,minZoom:2}).addTo(this.earth);
 
-                this.markerLayers = new L.featureGroup().addTo(this.map);
+                this.markerLayers = new L.markerClusterGroup().addTo(this.map);
                 this.measureLayers = new L.featureGroup().addTo(this.map);
 
                 this.map.spin(true);
@@ -298,24 +277,22 @@
                 })
             },
             onCloseRight(){
-                this.container.mode = 'center';
+                this.container.right = false;
                 this.rightSpan.list = [];
             },
             onCloseLeft(){
-                this.container.mode = 'center';
+                this.container.left = false;
             },
             filterTag(value,row){
                 return row.province == value;
             }
         },
         watch:{
-            'rightSpan.list':function(list){
-                  if(list.length >0){
-                    this.container.mode = 'right';
-                  }
-            },
-            mode(){
-                this.$nextTick(()=>this.map.invalidateSize());
+            container:{
+               deep:true,
+               handler(){
+                 this.$nextTick(()=>this.map.invalidateSize());
+               }
             },
             search(v){
                 this.flyTo(v);
@@ -325,7 +302,9 @@
             toolbar,
             clegend,
             layer,
-            searchForm
+            searchForm,
+            searchCompany,
+            login
         },
         mounted() {
             this.$nextTick(()=>{

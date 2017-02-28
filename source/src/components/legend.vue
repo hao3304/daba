@@ -4,6 +4,9 @@
             <i class="fa fa-eye"></i>
         </span>
         <transition name='legend'>
+            <el-button v-show='info' @click='info=false' style='position:absolute;color:#20a0ff;margin-top:-15px;left:-5px;z-index:1000;'  type="text" icon='circle-close'></el-button>
+        </transition>
+        <transition name='legend'>
             <el-tabs type="border-card" v-model='tab' v-show='info' >
                 <el-tab-pane label="地图图例" name="first">
                     <ul class="legend-list" style="margin-bottom:10px;">
@@ -169,7 +172,7 @@
     import {getLegend} from '../modules/service';
 
     export default{
-        store:['dam','layer','rightSpan'],
+        store:['dam','layer','rightSpan','container'],
         data(){
             return {
                 legend:[],
@@ -207,6 +210,8 @@
             onLegendClick(legend){
                 this.rightSpan.list = legend.children;
                 this.rightSpan.name = legend.legendName;
+                this.container.right = true;
+                this.container.left = false;
             }
         },
         watch:{

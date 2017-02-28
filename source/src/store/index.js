@@ -4,7 +4,9 @@
 
 export const store = {
     container:{
-      mode:'center'
+        mode:'center',
+        left:false,
+        right:false
     },
     dam:{
         list:[],
@@ -19,5 +21,10 @@ export const store = {
         list:[],
         name:''
     },
-    search:{}
+    search:{},
+    login:{
+        show:false,
+        name:'',
+        id:''
+    }
 }

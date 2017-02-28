@@ -10,13 +10,13 @@
                     <el-option v-for='i in f.items' :label='i.itemName' :value='i.itemValue' ></el-option>
                 </el-select>
                 <el-checkbox-group  v-model="model[f.conditionCode]" v-if='f.conditionType=="checkbox"'>
-                    <el-checkbox size='small' v-for='i in f.items'  :label='i.itemName' :name='i.itemValue' v-if='i.itemName!="请选择"' ></el-checkbox>
+                    <el-checkbox size='small' v-for='i in f.items'  :label='i.itemValue'  v-if='i.itemName!="请选择"' >{{i.itemName}}</el-checkbox>
                 </el-checkbox-group>
             </el-form-item>
             <hr>
             <div style='text-align:center;' >
-                <el-button type="primary" size='small'  icon="search" @click="onSubmit">查询</el-button>
-                <el-button size='small' @click='onReset'>重置</el-button>
+                <el-button type="primary" size='small' :disabled='!disabled' icon="search" @click="onSubmit">查询</el-button>
+                <el-button size='small'  :disabled='!disabled' @click='onReset'>重置</el-button>
             </div>
         </el-form>
 
@@ -33,15 +33,32 @@
     }
 </style>
 <script>
-    import {getSearchCondition} from '../modules/service.js';
+    import {getSearchCondition,getDma} from '../modules/service.js';
     import Vue from 'vue/dist/vue.js';
 
     export default{
-        store:['container'],
+        store:['container','rightSpan'],
         data(){
             return{
                 form:[],
                 model:{}
+            }
+        },
+        computed:{
+            disabled(){
+                let d = false;
+                for(let i in this.model){
+                    if(typeof this.model[i] == 'object'){
+                        if(this.model[i].length>0){
+                            return true;
+                        }
+                    }else{
+                        if(this.model[i] != ''){
+                            return true;
+                        }
+                    }
+                }
+                return d;
             }
         },
         methods:{
@@ -63,15 +80,34 @@
             onReset(){
                 this.model = {...this._m};
             },
+            getQuery(){
+                let query = {};
+                for(var i in this.model){
+                    if(typeof this.model[i] == 'object'){
+                        query[i] = this.model[i].join(',');
+                    }else{
+                        query[i] = this.model[i];
+                    }
+                }
+                return query;
+            },
             onSubmit(){
-                this.container.mode = 'all';
+                let query = this.getQuery();
+                layer.load(1);
+                getDma(query).then((rep)=>{
+                    this.rightSpan.list = rep;
+                    this.rightSpan.name = '综合查询结果';
+                    this.container.left = true;
+                    this.container.right = true;
+                    layer.closeAll();
+                })
             }
         },
         mounted(){
             this.render();
-            $('.search-form').slimScroll({ height: document.documentElement.clientHeight - 84 });
+            $('.search-form').slimScroll({ height: document.documentElement.clientHeight - 85 });
              $(window).resize(function(){
-                $('.search-form').slimScroll({ height: document.documentElement.clientHeight - 84 });
+                $('.search-form').slimScroll({ height: document.documentElement.clientHeight - 85 });
              });
         }
     }

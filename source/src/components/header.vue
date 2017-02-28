@@ -14,14 +14,26 @@
                       @select="handleSelect"
               >
               </el-autocomplete>
+
+              <el-button type='info' size='small' class='login-btn' @click='login.show = true'>
+                  <i class='fa fa-sign-in'></i>
+                  登录
+              </el-button>
+
           </div>
 </template>
 <style lang='less'>
+    .login-btn{
+        float:right;
+        font-size:14px;
+        text-decoration:none;
+        margin-top: 9px;
 
+    }
 </style>
 <script>
     export default{
-        store:['dam','search'],
+        store:['dam','search','login'],
         data(){
             return{
                 active:'',

@@ -1,19 +1,38 @@
 <template>
     <div class="slider " style="z-index:10000">
         <div class="logo">
-        <i class="fa fa-cloud"></i>
-               <label>{{name}}</label>
+            <i class="fa fa-cloud"></i>
+            <label>{{name}}</label>
         </div>
-           <div class='collapse-side' v-show='collapse'>
+
+        <div class='collapse-side' v-show='collapse'>
             <ul>
-                <li v-for='(n,$index) in navs'  class='parent-menu' >
-                   <a @click="onClick(n)" href='javascript:;'><i :class='n.icon'></i></a>
+                <li v-for='(n,$index) in navs'  class='parent-menu' :class='{"is-opened":index === $index}'>
+                    <a href='javascript:;' @click='onSelect(n.url)'><i :class='n.icon'></i></a>
+                    <ul class='chidlren-menu' v-if='n.children.length>0'>
+                        <li class='children-menu-header'>
+                            <a>{{n.name}} <i class="el-submenu__icon-arrow el-icon-arrow-right"></i></a>
+                        </li>
+                        <li v-for='c in n.children' :class="{'active':active==c.url}">
+                            <a href='javascript:;' @click.stop='onSelect(c.url,$event)'> <i :class='c.icon'></i>&nbsp;&nbsp;{{c.name}}</a>
+                        </li>
+                    </ul>
                 </li>
+
             </ul>
         </div>
+
+        <div>
+
+        </div>
+
     </div>
+
+
 </template>
 <style lang='less'>
+
+
 
     .btn-toggle .fa-bars{
         -webkit-transition: all .6s;
@@ -89,7 +108,7 @@
 </style>
 <script>
     export default{
-        store:['container'],
+        store:['container','container'],
         props:{
             name:''
         },
@@ -100,12 +119,22 @@
                 d:'',
                 navs:[],
                 collapse:true,
-                index:0
+                index:''
             }
         },
         methods:{
-            onClick:function (type) {
-                this.container.mode ='left';
+            onSelect:function (v,e) {
+                this.container.left = v;
+                switch(v){
+                    case 'search':
+                        this.index = 0;
+                        break;
+                    default:
+                    this.index = 1;
+                    break;
+
+                }
+
             }
         },
         watch:{
@@ -117,19 +146,50 @@
                 $(window).resize(function(){
                     $('#slider-menus').slimScroll({height:document.documentElement.clientHeight - 48});
                 })
+            },
+            'container.left'(left){
+                if(!left){
+                    this.index = '';
+                }
             }
         },
         mounted:function () {
             this.navs = [
                 {
                     id:'1',
-                    name:'运维管理',
-                    icon:'fa fa-th-large fa-size'
+                    name:'综合查询',
+                    icon:'fa fa-search fa-size',
+                    url:'search',
+                    children:[
+                    ]
                 },
                 {
                     id:'2',
-                    name:'网站管理',
-                    icon:'fa fa-cog fa-size'
+                    name:'分类查询',
+                    icon:'fa fa-cubes fa-size',
+                    children:[
+                        {
+                            id:'2-1',
+                            name:'主管单位',
+                            children:[],
+                            icon:'fa fa-bars',
+                            url:'company',
+                        },
+                        {
+                            id:'2-2',
+                            name:'省市区域',
+                            children:[],
+                            icon:'fa fa-file-text',
+                            url:'/content',
+                        },
+                        {
+                            id:'2-3',
+                            name:'流域分类',
+                            children:[],
+                            icon:'fa fa-envelope ',
+                            url:'/mssage',
+                        }
+                    ]
                 }
             ]
 
