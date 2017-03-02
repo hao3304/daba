@@ -16,7 +16,7 @@
               >
               </el-autocomplete>
 
-              <el-button type='info' size='small' class='login-btn' v-if='!login.id' @click='login.show = true'>
+              <el-button style='margin-top:10px;' type='info' size='small' class='login-btn' v-if='!login.id' @click='login.show = true'>
                   <i class='fa fa-sign-in'></i>
                   登录
               </el-button>

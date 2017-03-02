@@ -176,7 +176,7 @@
                 L.tileLayer.chinaProvider('Google.Satellite.Map',{maxZoom:18,minZoom:2}).addTo(this.earth);
                // L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion',{maxZoom:18,minZoom:2}).addTo(this.earth);
 
-                this.markerLayers = new L.markerClusterGroup().addTo(this.map);
+                this.markerLayers = new L.featureGroup().addTo(this.map);
                 this.measureLayers = new L.featureGroup().addTo(this.map);
                 this.regionLayers = new L.featureGroup().addTo(this.map);
 
