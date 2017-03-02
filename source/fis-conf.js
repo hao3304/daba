@@ -60,8 +60,9 @@ fis.match('{/static/css/*.less,/src/**.css}', {
         "gradientfixer": true
     }),
     optimizer: fis.plugin('clean-css')
-}).match('/{static,src}/**.{css,less}',{
-    packTo:'/static/pkg/all.css'
+}).match('/{static,src,node_modules}/**.{css,less}',{
+    packTo:'/static/pkg/all.css',
+    useHash:true
 });
 
 fis.match('/src/(**.vue)', {

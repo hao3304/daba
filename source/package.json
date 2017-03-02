@@ -22,7 +22,6 @@
     "antd": "^2.7.0",
     "axios": "^0.15.3",
     "buffer": "^5.0.5",
-    "element-thin-ui": "^1.0.3",
     "element-ui": "^1.2.1",
     "fis3-postpackager-compression": "^1.0.3",
     "leaflet": "^1.0.3",

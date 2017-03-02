@@ -7,12 +7,8 @@ const UI = require('element-ui');
 
 require('./modules/datefomat');
 require('/static/js/layer/skin/default/layer.css');
-import "element-thin-ui/index.css";
 import {getDamInfo,getDamIntroduction,getDamProperty,getDamPictures} from './modules/service';
-
 Vue.use(UI);
-
-
 new Vue({
     el: '#app',
     data: {
