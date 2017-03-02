@@ -268,6 +268,10 @@
                          default:
                          b = (l.domination !='电力'&& l.domination!='水利');
                     }
+                    if(!b){
+                        return b;
+                    }
+
                     b = this.layer.legend.indexOf(l.kind)>-1;
                     return b;
 
