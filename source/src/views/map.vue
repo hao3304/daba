@@ -3,6 +3,8 @@
         <el-col :span='5' class='main-wrap' v-show='container.left'  >
             <search-form @close='onCloseLeft' v-show='container.left =="search"'></search-form>
             <search-company @close='onCloseLeft' @node-click='flyTo' v-show='container.left =="company"'></search-company>
+            <search-river @close='onCloseLeft' v-show='container.left =="river"'></search-river>
+            <search-region @close='onCloseLeft' @select='onRegionSelect' v-show='container.left =="region"'></search-region>
         </el-col>
         <el-col :span="center_span" class='main-wrap' style="height: 100%;position:relative">
             <div id="map"  style="height: 100%"></div>
@@ -119,8 +121,11 @@
     import layer from '../components/layers.vue';
     import searchForm from '../components/searchForm.vue';
     import searchCompany from '../components/searchCompany.vue';
+    import searchRegion from '../components/searchRegion.vue';
+    import searchRiver from '../components/searchRiver.vue';
     import login from '../components/login.vue';
     require('leaflet.markercluster/dist/MarkerCluster.Default.css');
+    import randomColor from 'random-color';
 
 
     export default{
@@ -173,6 +178,7 @@
 
                 this.markerLayers = new L.markerClusterGroup().addTo(this.map);
                 this.measureLayers = new L.featureGroup().addTo(this.map);
+                this.regionLayers = new L.featureGroup().addTo(this.map);
 
                 this.map.spin(true);
                 this.getDamList();
@@ -285,6 +291,35 @@
             },
             filterTag(value,row){
                 return row.province == value;
+            },
+            onRegionSelect(region){
+                this.regionLayers.clearLayers();
+                region.forEach((r)=>{
+                    if(r.Geometry){
+                        let RandomColor = randomColor();
+                        let polygon = new L.polygon(this._getGeo(r.Geometry),{fillColor:RandomColor.hexString(),weight:2});
+                        polygon.bindPopup(r.RegionName);
+                        polygon.addTo(this.regionLayers);
+                    }
+                });
+                let bounds = this.regionLayers.getBounds();
+                if(bounds._northEast){
+                        this.map.fitBounds(bounds);
+                }
+            },
+            _getGeo(str){
+                let result = [];
+                str = str.replace('POLYGON ((','').replace('))','');
+                let list = str.split(', ');
+                list.forEach((l)=>{
+                    let latlng = l.split(' ');
+                    let lat = parseFloat(latlng[1]);
+                    let lng = parseFloat(latlng[0]);
+                    if(lat&&lng){
+                        result.push([lat,lng]);
+                    }
+                });
+                return result;
             }
         },
         watch:{
@@ -304,6 +339,8 @@
             layer,
             searchForm,
             searchCompany,
+            searchRegion,
+            searchRiver,
             login
         },
         mounted() {

@@ -9,7 +9,7 @@
             <ul>
                 <li v-for='(n,$index) in navs'  class='parent-menu' :class='{"is-opened":index === $index}'>
                     <a href='javascript:;' @click='onSelect(n.url)'><i :class='n.icon'></i></a>
-                    <ul class='chidlren-menu' v-if='n.children.length>0'>
+                    <ul class='children-menu' v-if='n.children.length>0'>
                         <li class='children-menu-header'>
                             <a>{{n.name}} <i class="el-submenu__icon-arrow el-icon-arrow-right"></i></a>
                         </li>
@@ -63,13 +63,13 @@
 
                 &:hover,&:active{
                     background-color:#475669;
-                    .chidlren-menu{
+                    .children-menu{
                         display:block;
 
                     }
                 }
 
-                .chidlren-menu{
+                .children-menu{
                     display:none;
                     position:absolute;
                     width:130px;
@@ -132,9 +132,7 @@
                     default:
                     this.index = 1;
                     break;
-
                 }
-
             }
         },
         watch:{
@@ -180,14 +178,14 @@
                             name:'省市区域',
                             children:[],
                             icon:'fa fa-file-text',
-                            url:'/content',
+                            url:'region',
                         },
                         {
                             id:'2-3',
                             name:'流域分类',
                             children:[],
                             icon:'fa fa-envelope ',
-                            url:'/mssage',
+                            url:'river',
                         }
                     ]
                 }

@@ -60,7 +60,7 @@ fis.match('{/static/css/*.less,/src/**.css}', {
         "gradientfixer": true
     }),
     optimizer: fis.plugin('clean-css')
-}).match('/static/**.{css,less}',{
+}).match('/{static,src,node_modules}/**.{css,less}',{
     packTo:'/static/pkg/all.css'
 });
 
@@ -76,12 +76,10 @@ fis.match('/src/(**.vue)', {
 fis.unhook('components');
 fis.hook('node_modules');
 
-fis.media('prod').match('/{node_modules,src}/**.js',{
-    packTo:'/static/pkg/bundle.js'
-}).match('/static/**.js',{packTo:'/static/pkg/common.js'}).match('::package',{
-    postpackager: fis.plugin('uglify-packto', {
-        include: ['/static/pkg/bundle.js']
-    })
-})
-
+fis.media('prod').match('/{node_modules,src}/**.{js,vue}',{
+    packTo:'/static/pkg/bundle.js', useHash:true
+}).match('/static/**.js',{packTo:'/static/pkg/common.js',useHash:true})
+    .match('::package',{
+        postpackager: [fis.plugin('compression'),  fis.plugin('loader')]
+    });
 
