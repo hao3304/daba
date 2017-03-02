@@ -58,5 +58,7 @@ new Vue({
         $(window).resize(function(){
             $('.main').slimScroll({ height: document.documentElement.clientHeight - 48 });
         });
+
+        $('.loading').hide();
     }
 });
