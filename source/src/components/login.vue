@@ -89,11 +89,6 @@
                 }
             }
         },
-        watch:{
-            active(type){
-                this.$emit('change',type);
-            }
-        },
         methods:{
             onSubmit(){
                 this.$refs.loginForm.validate((valid)=>{
@@ -126,6 +121,9 @@
                 if(show){
                     this.$refs.loginForm.resetFields();
                 }
+            },
+            active(type){
+                this.$emit('change',type);
             }
         }
     }
