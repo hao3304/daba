@@ -1,7 +1,6 @@
 /**
  * Created by jack on 16/11/14.
  */
-const axios = require('axios');
 // const prefix = 'http://122.224.167.105';
 const prefix = '';
 

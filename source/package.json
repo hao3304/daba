@@ -19,9 +19,6 @@
     "uglify-js": "^2.7.5"
   },
   "dependencies": {
-    "antd": "^2.7.0",
-    "axios": "^0.15.3",
-    "buffer": "^5.0.5",
     "element-ui": "^1.2.1",
     "fis3-postpackager-compression": "^1.0.3",
     "leaflet": "^1.0.3",
@@ -32,9 +29,6 @@
     "leaflet.markercluster": "^1.0.3",
     "process": "^0.11.9",
     "random-color": "^1.0.1",
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2",
-    "redux": "^3.6.0",
     "spin": "^0.0.1",
     "vue": "^2.1.10",
     "vue-router": "^2.2.0",

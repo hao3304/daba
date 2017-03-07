@@ -1,5 +1,5 @@
 <template>
-    <el-row style="height: 100%"  >
+    <el-row style="height: 100%" :class="{'show-tip':tooltip&&zoom>=8}"  >
         <el-col :span='5' class='main-wrap' v-show='container.left'  >
             <search-form @close='onCloseLeft' v-show='container.left =="search"'></search-form>
             <search-company @close='onCloseLeft' @node-click='flyTo' v-show='container.left =="company"'></search-company>
@@ -105,6 +105,49 @@
             font-size:14px;
         }
     }
+
+    .show-tip{
+        .my-div-icon{
+            .tag{
+                display: block;
+            }
+        }
+    }
+
+    .my-div-icon{
+        .tag{
+            position: absolute;
+            left: 14px;
+            top: -10px;
+            white-space: nowrap;
+            background-color: rgba(255,255,255,.9);
+            padding: 6px;
+            background-color: #fff;
+            border: 1px solid #fff;
+            border-radius: 3px;
+            color: #222;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            pointer-events: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,.4);
+            display: none;
+
+            &:before{
+                content:' ';
+                width:0;
+                height:0;
+                border-top:5px solid transparent;
+                border-bottom:5px solid transparent;
+                border-right:5px solid #fff;
+                position: absolute;
+                left: -6px;
+                top: 10px;
+            }
+        }
+    }
+
 </style>
 <script>
     import L from 'leaflet';
@@ -125,7 +168,7 @@
     import searchRiver from '../components/searchRiver.vue';
     import login from '../components/login.vue';
     require('leaflet.markercluster/dist/MarkerCluster.Default.css');
-    import randomColor from 'random-color';
+
 
 
     export default{
@@ -198,9 +241,9 @@
                     let lat = parseFloat(m.latitude),
                         lng = parseFloat(m.longitude);
                     if(lat&&lng){
-                        let icon = new L.icon({iconUrl:m.iconPath,iconSize:[parseInt(m.iconWidth),parseInt(m.iconHeight)]})
-
-                        let marker = new L.marker([lat,lng],{icon:icon,name:m.dbmc,dbid:m.dbid}).addTo(this.markerLayers);
+                        //let icon = new L.icon({iconUrl:m.iconPath,iconSize:[parseInt(m.iconWidth),parseInt(m.iconHeight)]})
+                        let icon = L.divIcon({className:"my-div-icon",html:`<img src="${m.iconPath}" style="width:${m.iconWidth}px;height:${m.iconHeight}px;margin-left:-${m.iconWidth/4}px;margin-top:-${m.iconHeight/4}px"><span class='tag'>${m.dbmc}</span>`});
+                        let marker = new L.marker([lat,lng],{icon:icon,name:m.dbmc,dbid:m.dbid,...m}).addTo(this.markerLayers);
                         marker.bindPopup('<iframe src="/detail.html?id='+m.dbid+'" style="border:none;width:352px;height:300px;" ></iframe>',{maxWidth:352,className:'custom-popup',minHeight:300});
 
                         marker.on('mouseover',(m)=>{
@@ -209,20 +252,20 @@
                                  m.target.openTooltip();
                             }
                         }).on('mouseout',(m)=>{
-                            if(!this.tooltip){
-                                 m.target.unbindTooltip();
-                            }
+                            m.target.unbindTooltip();
                         });
 
                         if(m.area){
                             let latlngs = this._getGeo(m.area,',');
-                            let RandomColor = randomColor();
-                            let polygon = new L.polygon(latlngs,{fillColor:RandomColor.hexString(),weight:2});
+                            let polygon = new L.polygon(latlngs,{fillColor:this.getRandomColor(),weight:2});
                             polygon.addTo(this.areaLayers);
                         }
                     }
                 });
                 this.map.spin(false);
+            },
+            getRandomColor(){
+               return '#'+Math.floor(Math.random()*16777215).toString(16);
             },
             getDamList(){
                  getDma().then((rep)=>{
@@ -263,26 +306,10 @@
                 this[type].addTo(this.map);
             },
             onTooltipChange(b){
-            this.tooltip = b;
-            this.map.spin(true);
-                if(b){
-                        this.map.setMinZoom(8);
-                        this.map.setZoom(8);
-                }else{
-                        this.map.setMinZoom(this.minZoom);
-                }
-                setTimeout(()=>{
-                this.markerLayers.eachLayer((layer)=>{
-                    if(b){
-                        layer.bindTooltip(layer.options.name,{permanent:true});
-
-
-                    }else{
-                    layer.unbindTooltip();
-                    }
-                })
-                this.map.spin(false);
-                },200)
+                 this.tooltip = b;
+                 if(b){
+                    this.map.setZoom(8);
+                 }
             },
             filterDam(){
                 this.map.spin(true);
@@ -335,8 +362,7 @@
                 this.regionLayers.clearLayers();
                 region.forEach((r)=>{
                     if(r.Geometry){
-                        let RandomColor = randomColor();
-                        let polygon = new L.polygon(this._getGeo(r.Geometry),{fillColor:RandomColor.hexString(),weight:2});
+                        let polygon = new L.polygon(this._getGeo(r.Geometry),{fillColor:this.getRandomColor(),weight:2});
                         polygon.bindPopup(r.RegionName);
                         polygon.addTo(this.regionLayers);
                     }
