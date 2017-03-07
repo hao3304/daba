@@ -11,7 +11,7 @@ L.Control.ZoomHome = L.Control.extend({
         wrap.className = 'leaflet-bar';
         const btn = L.DomUtil.create('a');
         btn.className = 'fa fa-home';
-        wrap.append(btn);
+        wrap.appendChild(btn);
 
         L.DomEvent.on(btn,'click',()=>{
             this._map.setView(this._map.options.center,this._map.options.zoom);
