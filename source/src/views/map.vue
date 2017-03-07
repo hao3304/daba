@@ -135,7 +135,8 @@
                 height: document.documentElement.clientHeight - 88,
                 zoom:6,
                 center:[30,120],
-                minZoom:2
+                minZoom:2,
+                tooltip:false
             }
         },
         computed:{
@@ -178,11 +179,15 @@
                 this.normal = L.tileLayer.chinaProvider('Google.Normal.Map',{maxZoom:18,minZoom:2}).addTo(this.map);
                 this.earth =new L.layerGroup();
                 L.tileLayer.chinaProvider('Google.Satellite.Map',{maxZoom:18,minZoom:2}).addTo(this.earth);
-               // L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion',{maxZoom:18,minZoom:2}).addTo(this.earth);
 
                 this.markerLayers = new L.featureGroup().addTo(this.map);
                 this.measureLayers = new L.featureGroup().addTo(this.map);
                 this.regionLayers = new L.featureGroup().addTo(this.map);
+                //大坝区域
+                this.areaLayers = new L.featureGroup();
+                this.map.on('zoomend',(m)=>{
+                    this.zoom = m.target._zoom;
+                })
 
                 this.map.spin(true);
                 this.getDamList();
@@ -198,6 +203,23 @@
                         let marker = new L.marker([lat,lng],{icon:icon,name:m.dbmc,dbid:m.dbid}).addTo(this.markerLayers);
                         marker.bindPopup('<iframe src="/detail.html?id='+m.dbid+'" style="border:none;width:352px;height:300px;" ></iframe>',{maxWidth:352,className:'custom-popup',minHeight:300});
 
+                        marker.on('mouseover',(m)=>{
+                            if(!this.tooltip){
+                                 m.target.bindTooltip(m.target.options.name);
+                                 m.target.openTooltip();
+                            }
+                        }).on('mouseout',(m)=>{
+                            if(!this.tooltip){
+                                 m.target.unbindTooltip();
+                            }
+                        });
+
+                        if(m.area){
+                            let latlngs = this._getGeo(m.area,',');
+                            let RandomColor = randomColor();
+                            let polygon = new L.polygon(latlngs,{fillColor:RandomColor.hexString(),weight:2});
+                            polygon.addTo(this.areaLayers);
+                        }
                     }
                 });
                 this.map.spin(false);
@@ -241,6 +263,7 @@
                 this[type].addTo(this.map);
             },
             onTooltipChange(b){
+            this.tooltip = b;
             this.map.spin(true);
                 if(b){
                         this.map.setMinZoom(8);
@@ -323,10 +346,10 @@
                         this.map.fitBounds(bounds);
                 }
             },
-            _getGeo(str){
+            _getGeo(str,split){
                 let result = [];
                 str = str.replace('POLYGON ((','').replace('))','');
-                let list = str.split(', ');
+                let list = str.split(split?split:', ');
                 list.forEach((l)=>{
                     let latlng = l.split(' ');
                     let lat = parseFloat(latlng[1]);
@@ -347,6 +370,13 @@
             },
             search(v){
                 this.flyTo(v);
+            },
+            zoom(z){
+                if(z >= 12){
+                    this.areaLayers.addTo(this.map);
+                }else{
+                    this.map.removeLayer(this.areaLayers);
+                }
             }
         },
         components:{
