@@ -69,5 +69,6 @@ new Vue({
         this.loading = false;
         this.tab='first';
         this.dbid = this.getQueryString('id');
+        $('.loading').hide();
     }
 });

@@ -23,7 +23,7 @@
                         type='index'
                         label="#"
                         width='60'
-                       >
+                >
                 </el-table-column>
                 <el-table-column
                         label="名称"
@@ -132,7 +132,10 @@
         store:['dam','layer','rightSpan','search','container'],
         data() {
             return {
-                height: document.documentElement.clientHeight - 88
+                height: document.documentElement.clientHeight - 88,
+                zoom:6,
+                center:[30,120],
+                minZoom:2
             }
         },
         computed:{
@@ -161,8 +164,9 @@
         methods:{
             renderMap(){
                 this.map = new L.map('map',{
-                    center:[30,120],
-                    zoom:6,
+                    center:this.center,
+                    zoom:this.zoom,
+                    minZoom:this.minZoom,
                     attributionControl:false,
                     zoomControl:false,
                     editable:true
@@ -171,7 +175,7 @@
                 //L.control.scale().addTo(this.map);
                 L.control.zoomhome({position:'topleft'}).addTo(this.map);
 
-                this.normal = L.tileLayer.chinaProvider('GaoDe.Normal.Map',{maxZoom:18,minZoom:2}).addTo(this.map);
+                this.normal = L.tileLayer.chinaProvider('Google.Normal.Map',{maxZoom:18,minZoom:2}).addTo(this.map);
                 this.earth =new L.layerGroup();
                 L.tileLayer.chinaProvider('Google.Satellite.Map',{maxZoom:18,minZoom:2}).addTo(this.earth);
                // L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion',{maxZoom:18,minZoom:2}).addTo(this.earth);
@@ -238,10 +242,18 @@
             },
             onTooltipChange(b){
             this.map.spin(true);
+                if(b){
+                        this.map.setMinZoom(8);
+                        this.map.setZoom(8);
+                }else{
+                        this.map.setMinZoom(this.minZoom);
+                }
                 setTimeout(()=>{
                 this.markerLayers.eachLayer((layer)=>{
                     if(b){
                         layer.bindTooltip(layer.options.name,{permanent:true});
+
+
                     }else{
                     layer.unbindTooltip();
                     }
