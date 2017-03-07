@@ -75,8 +75,6 @@
                     this.form = rep;
                 });
             },
-            onSubmit(){
-            },
             onReset(){
                 this.model = {...this._m};
             },
