@@ -97,7 +97,7 @@
                 getDma(query).then((rep)=>{
                     this.rightSpan.list = rep;
                     this.rightSpan.name = '综合查询结果';
-                    this.container.left = true;
+                    this.container.left = 'search';
                     this.container.right = true;
                     layer.closeAll();
                 })

@@ -108,7 +108,7 @@
 </style>
 <script>
     export default{
-        store:['container','container'],
+        store:['container'],
         props:{
             name:''
         },

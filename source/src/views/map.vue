@@ -294,7 +294,7 @@
             flyTo({dbid}){
                 this.markerLayers.eachLayer((layer)=>{
                     if(layer.options.dbid == dbid){
-                       return this.map.flyTo(layer._latlng,16);
+                       return this.map.setView(layer._latlng,16);
                     }
                 })
             },
