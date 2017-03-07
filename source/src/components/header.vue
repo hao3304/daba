@@ -1,6 +1,6 @@
 <template>
           <div class="el-menu-demo header" style="border-right: 0;border-bottom: 0" mode="horizontal" :default-active='active' @select='onSelect'>
-              <h5 style="text-shadow: 1px 1px 1px #666;position: absolute;left: 15px;top:5px;color: #fff;margin: 0;font-size: 22px;">全国大坝分布展示系统</h5>
+              <h5 style="position: absolute;left: 15px;top:5px;color: #fff;margin: 0;font-size: 20px;">全国大坝分布展示系统</h5>
 
               <el-autocomplete
                       style="position: absolute;width: 220px;top:5px;left: 260px;"
