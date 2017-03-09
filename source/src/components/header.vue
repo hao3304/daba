@@ -3,7 +3,7 @@
               <h5 style="position: absolute;left: 15px;top:5px;color: #fff;margin: 0;font-size: 20px;">全国大坝分布展示系统</h5>
 
               <el-autocomplete
-                      style="position: absolute;width: 220px;top:5px;left: 260px;"
+                      style="position: absolute;width: 220px;top:9px;left: 260px;line-height: initial;"
                       class="inline-input"
                       v-model="query"
                       size='small'

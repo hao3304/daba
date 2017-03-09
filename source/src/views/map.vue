@@ -179,7 +179,8 @@
                 zoom:6,
                 center:[30,120],
                 minZoom:2,
-                tooltip:false
+                tooltip:false,
+                list:[]
             }
         },
         computed:{
@@ -270,7 +271,8 @@
             getDamList(){
                  getDma().then((rep)=>{
                     this.dam.list = rep;
-                    this.renderMarkers(rep);
+                    this.list = rep;
+                    this.renderMarkers(this.list);
                  });
             },
             onToolbarClick(type){
@@ -313,7 +315,7 @@
             },
             filterDam(){
                 this.map.spin(true);
-                let list = this.dam.list.filter((l)=>{
+                let list = this.list.filter((l)=>{
                      let b = true;
                      b = this.layer.state.indexOf(l.isGisConfirm)>-1;
                     if(!b){
@@ -338,6 +340,7 @@
                     return b;
 
                 });
+                this.dam.list = list;
                 setTimeout(()=>this.renderMarkers(list),100);
 
             },
