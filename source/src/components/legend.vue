@@ -24,7 +24,7 @@
                         </el-radio-group>
                     </div>
                     <ul class="legend-list" style="padding-left:30px;">
-                        <li v-for="l in stat">
+                        <li v-for="l in stat" v-if='l.children.length>0'>
                             <el-checkbox :label="l.legendName" v-model='layer.legend'>
                                 <img :src="l.iconPath" :alt="l.legendName">
                                 <span style='font-size:12px;'>{{l.legendName}}</span>
