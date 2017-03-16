@@ -81,9 +81,9 @@
             onIconClick(){this.query =''}
         },
         mounted(){
-            $('.search-river').slimScroll({ height: document.documentElement.clientHeight - 85 });
+            $('.search-river').slimScroll({ height: document.documentElement.clientHeight - 37 });
              $(window).resize(function(){
-                $('.search-river').slimScroll({ height: document.documentElement.clientHeight - 85 });
+                $('.search-river').slimScroll({ height: document.documentElement.clientHeight - 37 });
              });
 
              this.render();

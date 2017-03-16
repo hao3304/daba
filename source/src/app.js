@@ -5,6 +5,11 @@
 const Vue = require('vue/dist/vue.js');
 const UI = require('element-ui');
 const Router = require('vue-router');
+import VueLocalStorage from 'vue-ls';
+
+let options = {
+    namespace: 'vuejs__'
+};
 
 require('./modules/datefomat');
 require('/static/js/layer/skin/default/layer.css');
@@ -16,6 +21,7 @@ import VueStash from 'vue-stash';
 Vue.use(VueStash);
 Vue.use(UI);
 Vue.use(Router);
+Vue.use(VueLocalStorage, options);
 
 import slider from './components/slider.vue';
 import cheader from './components/header.vue';
@@ -52,11 +58,11 @@ new Vue({
     mounted: function () {
         var self = this;
         this.$nextTick(function () {
-            $('.main').slimScroll({ height: document.documentElement.clientHeight - 48 });
+            $('.main').slimScroll({ height: document.documentElement.clientHeight });
         });
 
         $(window).resize(function(){
-            $('.main').slimScroll({ height: document.documentElement.clientHeight - 48 });
+            $('.main').slimScroll({ height: document.documentElement.clientHeight });
         });
 
         $('.loading').hide();

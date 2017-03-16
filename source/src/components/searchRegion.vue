@@ -157,9 +157,9 @@
             }
         },
         mounted(){
-            $('.search-region').slimScroll({ height: document.documentElement.clientHeight - 85 });
+            $('.search-region').slimScroll({ height: document.documentElement.clientHeight - 37 });
              $(window).resize(function(){
-                $('.search-region').slimScroll({ height: document.documentElement.clientHeight - 85 });
+                $('.search-region').slimScroll({ height: document.documentElement.clientHeight - 37 });
              });
         },
         watch:{

@@ -103,9 +103,9 @@
         },
         mounted(){
             this.render();
-            $('.search-form').slimScroll({ height: document.documentElement.clientHeight - 85 });
+            $('.search-form').slimScroll({ height: document.documentElement.clientHeight - 37 });
              $(window).resize(function(){
-                $('.search-form').slimScroll({ height: document.documentElement.clientHeight - 85 });
+                $('.search-form').slimScroll({ height: document.documentElement.clientHeight - 37 });
              });
         }
     }

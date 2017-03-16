@@ -83,9 +83,9 @@
             onIconClick(){this.query =''}
         },
         mounted(){
-            $('.search-company').slimScroll({ height: document.documentElement.clientHeight - 85 });
+            $('.search-company').slimScroll({ height: document.documentElement.clientHeight - 37 });
              $(window).resize(function(){
-                $('.search-company').slimScroll({ height: document.documentElement.clientHeight - 85 });
+                $('.search-company').slimScroll({ height: document.documentElement.clientHeight - 37 });
              });
 
              this.render();

@@ -1,17 +1,14 @@
 <template>
     <div class="slider " style="z-index:1000">
-        <div class="logo">
-            <i class="fa fa-cloud"></i>
-            <label>{{name}}</label>
-        </div>
-
         <div class='collapse-side' v-show='collapse'>
             <ul>
                 <li v-for='(n,$index) in navs'  class='parent-menu' :class='{"is-opened":index === $index}'>
                     <a href='javascript:;' @click='onSelect(n.url)'><i :class='n.icon'></i></a>
                     <ul class='children-menu' v-if='n.children.length>0'>
                         <li class='children-menu-header'>
-                            <a>{{n.name}} <i class="el-submenu__icon-arrow el-icon-arrow-right"></i></a>
+                            <el-tooltip class="item" effect="dark" content="Right Center 提示文字" placement="right">
+                                <a>{{n.name}} <i class="el-submenu__icon-arrow el-icon-arrow-right"></i></a>
+                            </el-tooltip>
                         </li>
                         <li v-for='c in n.children' :class="{'active':active==c.url}">
                             <a href='javascript:;' @click.stop='onSelect(c.url,$event)'> <i :class='c.icon'></i>&nbsp;&nbsp;{{c.name}}</a>
@@ -127,7 +124,10 @@
                 this.container.left = v;
                 switch(v){
                     case 'search':
-                        this.index = 0;
+                     this.index = 0;
+                        break;
+                    case 'tool':
+                        this.index = 2;
                         break;
                     default:
                     this.index = 1;
@@ -188,6 +188,12 @@
                             url:'river',
                         }
                     ]
+                },{
+                    id:'3',
+                    name:'工具栏',
+                    icon:'fa fa-pencil',
+                    url:'tool',
+                    children:[]
                 }
             ]
 

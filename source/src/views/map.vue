@@ -5,12 +5,13 @@
             <search-company @close='onCloseLeft' @node-click='flyTo' v-show='container.left =="company"'></search-company>
             <search-river @close='onCloseLeft' v-show='container.left =="river"'></search-river>
             <search-region @close='onCloseLeft' @select='onRegionSelect' v-show='container.left =="region"'></search-region>
+            <toolbar @toolbar-click="onToolbarClick" @close='onCloseLeft' v-show='container.left =="tool"' class='toolbar'></toolbar>
         </el-col>
         <el-col :span="center_span" class='main-wrap' style="height: 100%;position:relative">
             <div id="map"  style="height: 100%"></div>
-            <toolbar @toolbar-click="onToolbarClick" class='toolbar'></toolbar>
             <clegend @change='filterDam' @tooltip-change='onTooltipChange' style="position: absolute;z-index: 1000;right: 10px;top:10px;"></clegend>
             <layer @change='onLayerChange' style="bottom: 10px;right: 10px;"></layer>
+            <search></search>
             <login></login>
         </el-col>
         <el-col :span='6'  v-show='container.right' class='main-wrap' >
@@ -74,9 +75,6 @@
         }
     }
 
-    .toolbar{
-        position: fixed;top:11px;right:140px;z-index: 1000;
-    }
 
     @media screen and (max-width:940px){
         .toolbar{
@@ -166,6 +164,7 @@
     import searchCompany from '../components/searchCompany.vue';
     import searchRegion from '../components/searchRegion.vue';
     import searchRiver from '../components/searchRiver.vue';
+    import search from '../components/search.vue';
     import login from '../components/login.vue';
     require('leaflet.markercluster/dist/MarkerCluster.Default.css');
 
@@ -176,8 +175,8 @@
         data() {
             return {
                 height: document.documentElement.clientHeight - 88,
-                zoom:6,
-                center:[30,120],
+                zoom:4,
+                center:[38,115],
                 minZoom:2,
                 tooltip:false,
                 list:[]
@@ -245,7 +244,7 @@
                         //let icon = new L.icon({iconUrl:m.iconPath,iconSize:[parseInt(m.iconWidth),parseInt(m.iconHeight)]})
                         let icon = L.divIcon({className:"my-div-icon",html:`<img src="${m.iconPath}" style="width:${m.iconWidth}px;height:${m.iconHeight}px;margin-left:-${m.iconWidth/4}px;margin-top:-${m.iconHeight/4}px"><span class='tag'>${m.dbmc}</span>`});
                         let marker = new L.marker([lat,lng],{icon:icon,name:m.dbmc,dbid:m.dbid,...m}).addTo(this.markerLayers);
-                        marker.bindPopup('<iframe src="/detail.html?id='+m.dbid+'" style="border:none;width:352px;height:300px;" ></iframe>',{maxWidth:352,className:'custom-popup',minHeight:300});
+                        marker.bindPopup('<iframe src="/detail.html?id='+m.dbid+'" style="border:none;width:360px;height:300px;" ></iframe>',{maxWidth:352,className:'custom-popup',minHeight:300});
 
                         marker.on('mouseover',(m)=>{
                             if(!this.tooltip){
@@ -269,10 +268,20 @@
                return '#'+Math.floor(Math.random()*16777215).toString(16);
             },
             getDamList(){
+                 this.list = this.$ls.get('list',[]);
+                 if(this.list.length>0){
+                   setTimeout(()=>{
+                     this.renderMarkers(this.list);
+                   },1000)
+                 }
                  getDma().then((rep)=>{
-                    this.dam.list = rep;
-                    this.list = rep;
-                    this.renderMarkers(this.list);
+                    this.dam.list = this.list;
+                    this.$ls.set('list',rep);
+                    if(this.list.length == 0){
+                        this.list = rep;
+                        this.dam.list = rep;
+                        this.renderMarkers(this.list);
+                    }
                  });
             },
             onToolbarClick(type){
@@ -416,7 +425,8 @@
             searchCompany,
             searchRegion,
             searchRiver,
-            login
+            login,
+            search
         },
         mounted() {
             this.$nextTick(()=>{

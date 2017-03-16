@@ -12,7 +12,7 @@
             font-size: 14px;
             color: #333;
             max-height: 260px;
-            width:350px;
+            width:358px;
             overflow-y: auto;
         }
         .dam-info h5{
@@ -66,10 +66,10 @@
         </el-tab-pane>
         <el-tab-pane label="列表信息" name="third">
            <div class="dam-info" style="text-align: center">
-               <el-radio-group v-model="radio">
-                   <el-radio-button v-for="p in property" :label="p.groupName"></el-radio-button>
+               <el-radio-group v-model="radio" size="small">
+                   <el-radio-button size="small" v-for="p in property" :label="p.groupName"></el-radio-button>
                </el-radio-group>
-               <table class="dam-info-table" v-for="p in property" v-show="radio == p.groupName">
+               <table style="margin-top:5px;" class="dam-info-table" v-for="p in property" v-show="radio == p.groupName">
                    <tr v-for="g in p.groupItems">
                        <td style="width: 140px;">{{g.itemName}}</td>
                        <td>{{g.itemValue}}</td>
