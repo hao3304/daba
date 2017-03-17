@@ -46,19 +46,6 @@
             }
         },
         methods:{
-            onSelect:function(key){
-                if(key == 'layout'){
-                    layer.confirm('确定退出系统?',{title:'提示'},function(){
-                        $.post('/dap/user/logout.json',{},function(rep){
-                            if(rep.Code==0){
-                                window.location.href = '/login.html';
-                            }else{
-                                layer.alert(rep.Message);
-                            }
-                        })
-                    })
-                }
-            },
             handleSelect(v){
                   this.search = {...v};
             },
@@ -72,6 +59,7 @@
                     btn:['确定','取消'],
                     yes(){
                         logout().then((rep)=>{
+                            rep = JSON.parse(rep);
                             if(rep.result && rep.result == 'success'){
                                 layer.open({content:'退出成功！'});
                                 layer.closeAll();
