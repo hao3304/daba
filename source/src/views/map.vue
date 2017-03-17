@@ -9,10 +9,11 @@
         </el-col>
         <el-col :span="center_span" class='main-wrap' style="height: 100%;position:relative">
             <div id="map"  style="height: 100%"></div>
-            <clegend @change='filterDam' @tooltip-change='onTooltipChange' style="position: absolute;z-index: 1000;right: 10px;top:10px;"></clegend>
+            <clegend @change='filterDam' @tooltip-change='onTooltipChange' style="position: absolute;z-index: 1000;right: 10px;top:50px;"></clegend>
             <layer @change='onLayerChange' style="bottom: 10px;right: 10px;"></layer>
             <search></search>
             <login></login>
+            <cheader style='position:absolute;z-index:1000;right:10px;top:0;'></cheader>
         </el-col>
         <el-col :span='6'  v-show='container.right' class='main-wrap' >
             <div class='header'>
@@ -166,6 +167,7 @@
     import searchRiver from '../components/searchRiver.vue';
     import search from '../components/search.vue';
     import login from '../components/login.vue';
+    import cheader from '../components/header.vue';
     require('leaflet.markercluster/dist/MarkerCluster.Default.css');
 
 
@@ -238,6 +240,11 @@
             renderMarkers(rep){
                 this.markerLayers.clearLayers();
                 rep.forEach((m)=>{
+
+                    if(typeof m.isShow  =='boolean'&& !m.isShow){
+                        return;
+                    }
+
                     let lat = parseFloat(m.latitude),
                         lng = parseFloat(m.longitude);
                     if(lat&&lng){
@@ -345,7 +352,7 @@
                         return b;
                     }
 
-                    b = this.layer.legend.indexOf(l.kind)>-1;
+                    l.isShow = this.layer.legend.indexOf(l.kind)>-1;
                     return b;
 
                 });
@@ -426,7 +433,8 @@
             searchRegion,
             searchRiver,
             login,
-            search
+            search,
+            cheader
         },
         mounted() {
             this.$nextTick(()=>{

@@ -1,21 +1,5 @@
 <template>
-          <div class="el-menu-demo header" style="border-right: 0;border-bottom: 0" mode="horizontal" :default-active='active' @select='onSelect'>
-              <h5 style="position: absolute;left: 15px;top:5px;color: #fff;margin: 0;font-size: 20px;">全国大坝分布展示系统</h5>
-
-              <el-autocomplete
-                      style="position: absolute;width: 220px;top:9px;left: 260px;line-height: initial;"
-                      class="inline-input"
-                      v-model="query"
-                      size='small'
-                      :icon='icons'
-                      :fetch-suggestions="querySearch"
-                      placeholder="请输入查询内容"
-                      :trigger-on-focus="false"
-                      :on-icon-click="handleIconClick"
-                      @select="handleSelect"
-              >
-              </el-autocomplete>
-
+          <div>
               <el-button style='margin-top:10px;' type='info' size='small' class='login-btn' v-if='!login.id' @click='login.show = true'>
                   <i class='fa fa-sign-in'></i>
                   登录
@@ -23,7 +7,7 @@
 
               <el-dropdown class='user-info'  v-if='login.id'  @command='onLoginout'>
                   <el-button type="primary" size='small' >
-                     <i class='fa fa-user'></i> {{login.name}}<i class="el-icon-caret-bottom el-icon--right"></i>
+                      <i class='fa fa-user'></i> {{login.name}}<i class="el-icon-caret-bottom el-icon--right"></i>
                   </el-button>
                   <el-dropdown-menu slot="dropdown" size='small' >
                       <el-dropdown-item style='font-size:12px;line-height:20px;' command='loginout'>退出</el-dropdown-item>
@@ -75,11 +59,6 @@
                     })
                 }
             },
-            querySearch(queryString,cb){
-                let list = this.dam.list;
-                let result = queryString?list.filter((l)=>l.dbmc.indexOf(queryString.toLowerCase())>-1):list;
-                cb(result.map((r)=>{return {value:r.dbmc,...r}}));
-            },
             handleSelect(v){
                   this.search = {...v};
             },
@@ -102,11 +81,6 @@
                         })
                     }
                 })
-            }
-        },
-        watch:{
-            navs:function () {
-                this.active = this.navs[this.navs.length-1].Id;
             }
         },
         mounted(){
