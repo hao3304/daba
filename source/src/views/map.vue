@@ -280,7 +280,7 @@
         data() {
             return {
                 height: document.documentElement.clientHeight - 88,
-                zoom:8,
+                zoom:10,
                 center:[38,115],
                 minZoom:2,
                 tooltip:false,
@@ -592,7 +592,7 @@
                         yes:()=>{
                             layer.loading(1);
                              delDam(dbid).then(rep=>{
-                                let result = JSON.parse(rep);
+                                let result = eval(rep);
                                     layer.closeAll();
                                     this.$message({
                                       type: result?'success':'error',
@@ -607,11 +607,10 @@
             onSaveDb(){
                 this.$refs.table.validate(valid=>{
                     if(valid){
-                        layer.loading(1);
+                        layer.load(1);
                         setDbPosition(this.form).then(rep=>{
                             layer.closeAll();
-                            result = JSON.parse(rep);
-                            if(result){
+                            if(eval(rep)){
                                 this.$message({
                                   type: 'success',
                                   message: '提交成功！'

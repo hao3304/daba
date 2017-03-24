@@ -22,7 +22,7 @@ export const getSearchCondition = ()=>co($.get(`${prefix}/GIS/searchDam/getSearc
 export const getZGDWList = ()=>co($.get(`${prefix}/GIS/searchDam/getZGDWList.jsp`),{},'json');
 export const getLoginInfo = ()=>co($.get(`${prefix}/GIS/getLoginInfo.jsp`),{},'json');
 export const logout = ()=>co($.get(`${prefix}/GIS/logout.jsp`));
-export const getDbList = ()=>co($.get(`${prefix}/GIS/addPosition/getDbList.jsp`,'json'));
+export const getDbList = ()=>co($.get(`${prefix}/GIS/addPosition/getDbList.jsp?isplaced=0`,'json'));
 export const setDbPosition = (params)=>co($.get(`${prefix}/GIS/addPosition/setDbPosition.jsp`,params,'json'));
 export const delDam = (id)=>co($.get(`${prefix}/GIS/addPosition/delDam.jsp`,{dbid:id},'json'));
 export const doLogin = (p = {username:'',password:''})=>co($.getJSON(`${prefix}/GIS/loginOk.jsp?username=${p.username}&&password=${p.password}`));
