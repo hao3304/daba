@@ -65,6 +65,7 @@
                                 layer.closeAll();
                                 this.login.name = '';
                                 this.login.id = '';
+                                window.location.reload();
                             }
                         })
                     }

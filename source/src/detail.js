@@ -52,11 +52,12 @@ new Vue({
                     break;
                 case 'third':
                     getDamProperty(this.dbid).then((rep)=>{
-                        this.property = JSON.parse(decodeURI(encodeURI(rep).replace(/%0D%0A/g,'')))[0]['items'] || [];
+                        this.property = JSON.parse(decodeURI(encodeURI(rep).replace(/%0D%0A/g,'').replace(/%0A/g,'%20')))[0]['items'] || [];
                         if(this.property.length>0){
                             this.radio = this.property[0].groupName;
                         }
                     });
+                    break;
                 case 'fourth':
                     getDamPictures(this.dbid).then((rep)=>{
                         this.pic = JSON.parse(decodeURI(encodeURI(rep).replace(/%0D%0A/g,'')))[0]['pictures'] || [];

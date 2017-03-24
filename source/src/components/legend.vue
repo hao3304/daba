@@ -224,7 +224,7 @@
             layer:{
                 deep:true,
                 handler(){
-                    if(this.loading&&this.dam.list.length>0){
+                    if(this.loading){
                         this.$emit('change');
                     }
                 }

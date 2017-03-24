@@ -1,5 +1,5 @@
 <template>
-    <el-row style="height: 100%" :class="{'show-tip':tooltip&&zoom>=8}"  >
+    <el-row style="height: 100%" :class="{'show-tip':tooltip&&zoom>=8,'small-icon':zoom<8&&zoom>6,'mini-icon':zoom<=6}"  >
         <el-col :span='5' class='main-wrap' v-show='container.left'  >
             <search-form @close='onCloseLeft' v-show='container.left =="search"'></search-form>
             <search-company @close='onCloseLeft' @node-click='flyTo' v-show='container.left =="company"'></search-company>
@@ -10,7 +10,7 @@
         <el-col :span="center_span" class='main-wrap' style="height: 100%;position:relative">
             <div id="map"  style="height: 100%"></div>
             <clegend @change='filterDam' @tooltip-change='onTooltipChange' style="position: absolute;z-index: 1000;right: 10px;top:50px;"></clegend>
-            <layer @change='onLayerChange' style="bottom: 10px;right: 10px;"></layer>
+            <layers @change='onLayerChange' style="bottom: 10px;right: 10px;"></layers>
             <search></search>
             <login></login>
             <cheader style='position:absolute;z-index:1000;right:10px;top:0;'></cheader>
@@ -61,18 +61,102 @@
                 </el-table-column>
             </el-table>
         </el-col>
+
+        <el-dialog size='small' v-model='dialog' >
+            <el-form :model="form" label-width="85px" ref='table' :rules='rules' >
+                    <el-row>
+                        <el-col :span=12 >
+                            <el-form-item label='所在省份'  prop='province'>
+                                <el-select placeholder='请先选择省份' v-model='form.province'>
+                                    <el-option v-for='p in provinces' :label='p.name' :value='p.name' ></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span=12 v-show='form.province' >
+                            <el-form-item label='所在地市'>
+                                <el-select placeholder='请选择地市' v-model='form.city' >
+                                    <el-option v-for='c in citys' :lable='c.name' :value='c.name' ></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span=24 v-show='form.province'  prop='dbid'>
+                            <el-form-item label='选择大坝' >
+                                <el-select placeholder='请选择大坝' v-model='form.dbid' >
+                                    <el-option v-for='db in selectDB' :label='db.dbmc' :value='db.dbid' ></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row v-show='form.dbid'>
+                        <el-col :span=12  >
+                            <el-form-item label='填充颜色'>
+                                <el-color-picker v-model="form.bgColor"></el-color-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span=12  >
+                            <el-form-item label='边框颜色'>
+                                <el-color-picker v-model="form.borderColor"></el-color-picker>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row v-show='form.dbid'>
+                        <el-col :span=12 >
+                            <el-form-item label='大坝角度'>
+                                <el-input  type='number' placeholder="请输入大坝角度" v-model='form.angle' ></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span=12 >
+                            <el-form-item label='大坝长度'>
+                                <el-input  type='number' placeholder="请输入大坝长度" v-model='form.length' ></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row v-show='form.dbid'>
+                        <el-col :span=12 >
+                            <el-form-item label='精度' prop='longitude' >
+                                    <el-input placeholder='请输入精度'  v-model='form.longitude' type='number' ></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span=12>
+                            <el-form-item label='维度' prop='latitude'  >
+                                <el-input placeholder='请输入纬度' v-model='form.latitude' type='number' ></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row v-if='form.dbid' :span='24'>
+                        <pos :lat='form.latitude' @draw-polygon='onGetPolygon' @change='onGetPos' :fill='form.bgColor' :border='form.borderColor'  :angle='form.angle' :lng='form.longitude' :length='form.length' ></pos>
+                    </el-row>
+            </el-form>
+                    <span slot="footer" class="dialog-footer">
+                        <el-button type="primary" @click='onSaveDb'>确 定</el-button>
+                        <el-button @click.native="dialog = false">取 消</el-button>
+                    </span>
+        </el-dialog>
+
     </el-row>
 </template>
 <style lang='less'>
-    .leaflet-marker-draggable{
-        width: 10px !important;
-        height: 10px !important;;
-        margin-top: -5px !important;;
-        margin-left: -5px !important;
-    }
+
     .custom-popup{
         .leaflet-popup-content{
             margin: 5px;
+        }
+    }
+
+    .small-icon{
+        .my-div-icon{
+            img{
+                transform: scale(0.8);
+            }
+        }
+    }
+    .mini-icon{
+        .my-div-icon{
+            img{
+                transform: scale(0.6);
+            }
         }
     }
 
@@ -151,16 +235,17 @@
 <script>
     import L from 'leaflet';
     import '../components/leaflet.chinese';
-    import { getDma } from '../modules/service';
+    import { getDma,setDbPosition,delDam } from '../modules/service';
     window.Spinner = require('spin');
     require('leaflet-spin')(L);
     import '../components/zoomhome';
     import 'leaflet-editable';
     import 'leaflet-measure-path';
+    import 'leaflet-contextmenu';
     import 'leaflet.markercluster';
     import toolbar from '../components/toolbar.vue';
     import clegend from '../components/legend.vue';
-    import layer from '../components/layers.vue';
+    import layers from '../components/layers.vue';
     import searchForm from '../components/searchForm.vue';
     import searchCompany from '../components/searchCompany.vue';
     import searchRegion from '../components/searchRegion.vue';
@@ -168,20 +253,55 @@
     import search from '../components/search.vue';
     import login from '../components/login.vue';
     import cheader from '../components/header.vue';
+    import pos from '../components/position.vue';
+
     require('leaflet.markercluster/dist/MarkerCluster.Default.css');
 
+    import {province,city} from '../modules/province';
 
+    function model(){
+        return {
+            dbid:'',
+            province:'',
+            city:'',
+            longitude:'',
+            latitude:'',
+            bgColor:'',
+            borderColor:'',
+            riverid:'',
+            angle:'',
+            area:'',
+            length:''
+        }
+    }
 
     export default{
-        store:['dam','layer','rightSpan','search','container'],
+        store:['dam','layer','rightSpan','search','container','login','addList'],
         data() {
             return {
                 height: document.documentElement.clientHeight - 88,
-                zoom:4,
+                zoom:8,
                 center:[38,115],
                 minZoom:2,
                 tooltip:false,
-                list:[]
+                list:[],
+                dialog:false,
+                form:model(),
+                provinces:province,
+                rules:{
+                    province:[
+                        {required:true,message:'请选择所属省份',trigger:'blur'}
+                    ],
+                    dbid:[
+                        {required:true,message:'请选择大坝',trigger:'blur'}
+                    ],
+                    longitude:[
+                        {required:true,message:'请输入精度',trigger:'blur',type:'number'}
+                    ],
+                    latitude:[
+                        {required:true,message:'请输入纬度',trigger:'blur',type:'number'}
+                    ]
+                }
             }
         },
         computed:{
@@ -205,6 +325,29 @@
                     return {text:name,value:name};
                 });
 
+            },
+            citys(){
+                let pid,result = [];
+                this.provinces.forEach((p)=>{
+                    if(p.name == this.form.province){
+                        pid = p.ProID;
+                    }
+                });
+                if(pid){
+                    city.forEach((c)=>{
+                        if(c.ProID == pid){
+                            result.push(c);
+                        }
+                    })
+                    return result;
+                }else{
+                    return [];
+                }
+            },
+            selectDB(){
+                return this.addList.filter(db=>{
+                    return db.sf == this.form.province && db.isplaced == 0
+                })
             }
         },
         methods:{
@@ -215,10 +358,25 @@
                     minZoom:this.minZoom,
                     attributionControl:false,
                     zoomControl:false,
-                    editable:true
+                    editable:true,
+                    contextmenu: true,
+                    contextmenuWidth: 140,
+                    contextmenuItems: [
+                    {
+                        text: '放大',
+                        callback:()=>{
+                            this.map.zoomIn();
+                        }
+                    },{
+                        text: '缩小',
+                        callback:()=>{
+                            this.map.zoomOut();
+                        }
+                    }
+                    ]
                 });
+
                 L.control.zoom({position:'bottomleft'}).addTo(this.map);
-                //L.control.scale().addTo(this.map);
                 L.control.zoomhome({position:'topleft'}).addTo(this.map);
 
                 this.normal = L.tileLayer.chinaProvider('Google.Normal.Map',{maxZoom:18,minZoom:2}).addTo(this.map);
@@ -240,8 +398,12 @@
             renderMarkers(rep){
                 this.markerLayers.clearLayers();
                 rep.forEach((m)=>{
-
-                    if(typeof m.isShow  =='boolean'&& !m.isShow){
+                    this.addMarker(m);
+                });
+                this.map.spin(false);
+            },
+            addMarker(m){
+                if(typeof m.isShow  =='boolean'&& !m.isShow){
                         return;
                     }
 
@@ -250,7 +412,23 @@
                     if(lat&&lng){
                         //let icon = new L.icon({iconUrl:m.iconPath,iconSize:[parseInt(m.iconWidth),parseInt(m.iconHeight)]})
                         let icon = L.divIcon({className:"my-div-icon",html:`<img src="${m.iconPath}" style="width:${m.iconWidth}px;height:${m.iconHeight}px;margin-left:-${m.iconWidth/4}px;margin-top:-${m.iconHeight/4}px"><span class='tag'>${m.dbmc}</span>`});
-                        let marker = new L.marker([lat,lng],{icon:icon,name:m.dbmc,dbid:m.dbid,...m}).addTo(this.markerLayers);
+                        let marker = new L.marker([lat,lng],{
+                        icon:icon,
+                        name:m.dbmc,
+                        dbid:m.dbid,
+                        ...m,
+                        contextmenu: this.login.id?true:false,
+                        contextmenuInheritItems:false,
+                        contextmenuItems: [{
+                            text: '编辑大坝',
+                            index: 0
+                        }, {
+                            text: '删除大坝',
+                            index: 1,
+                            callback:this.onDelDb
+                        }]
+
+                        }).addTo(this.markerLayers);
                         marker.bindPopup('<iframe src="/detail.html?id='+m.dbid+'" style="border:none;width:360px;height:300px;" ></iframe>',{maxWidth:352,className:'custom-popup',minHeight:300});
 
                         marker.on('mouseover',(m)=>{
@@ -268,27 +446,15 @@
                             polygon.addTo(this.areaLayers);
                         }
                     }
-                });
-                this.map.spin(false);
             },
             getRandomColor(){
                return '#'+Math.floor(Math.random()*16777215).toString(16);
             },
             getDamList(){
-                 this.list = this.$ls.get('list',[]);
-                 if(this.list.length>0){
-                   setTimeout(()=>{
-                     this.renderMarkers(this.list);
-                   },1000)
-                 }
                  getDma().then((rep)=>{
-                    this.dam.list = this.list;
-                    this.$ls.set('list',rep);
-                    if(this.list.length == 0){
                         this.list = rep;
                         this.dam.list = rep;
                         this.renderMarkers(this.list);
-                    }
                  });
             },
             onToolbarClick(type){
@@ -404,6 +570,63 @@
                     }
                 });
                 return result;
+            },
+            onAddDb(e){
+                this.dialog = true;
+                this.form = {...model()};
+                if(this.$refs.table){
+                    this.$refs.table.retFields();
+                }
+                this.form.longitude = e.latlng.lng;
+                this.form.latitude = e.latlng.lat;
+            },
+            onDelDb(e){
+                let dbid = e.relatedTarget.options.dbid;
+                let name = e.relatedTarget.options.name;
+                if(dbid){
+                    layer.open({
+                        title:'提示',
+                        icon:8,
+                        content:`是否删除该大坝（${name}）?`,
+                        btn:['确定','取消'],
+                        yes:()=>{
+                            layer.loading(1);
+                             delDam(dbid).then(rep=>{
+                                let result = JSON.parse(rep);
+                                    layer.closeAll();
+                                    this.$message({
+                                      type: result?'success':'error',
+                                      message: result?'删除成功！':'删除失败！'
+                                    });
+                                    this.markerLayers.removeLayer(e.relatedTarget);
+                             })
+                        }
+                    })
+                }
+            },
+            onSaveDb(){
+                this.$refs.table.validate(valid=>{
+                    if(valid){
+                        layer.loading(1);
+                        setDbPosition(this.form).then(rep=>{
+                            layer.closeAll();
+                            result = JSON.parse(rep);
+                            if(result){
+                                this.$message({
+                                  type: 'success',
+                                  message: '提交成功！'
+                                });
+                            }
+                        })
+                    }
+                })
+            },
+            onGetPos(position){
+                this.form.longitude = position.lng;
+                this.form.latitude = position.lat;
+            },
+            onGetPolygon(area){
+                this.form.area = area;
             }
         },
         watch:{
@@ -422,19 +645,33 @@
                 }else{
                     this.map.removeLayer(this.areaLayers);
                 }
+            },
+            'login.id'(id){
+                if(id){
+                    this.map.contextmenu.insertItem({
+                    text:'添加大坝',
+                    callback:this.onAddDb
+                    },0)
+                    this.map.contextmenu.insertItem('-',1);
+                    this.markerLayers.eachLayer(marker=>{
+                        marker.options.contextmenu = true;
+                    })
+
+                }
             }
         },
         components:{
             toolbar,
             clegend,
-            layer,
+            layers,
             searchForm,
             searchCompany,
             searchRegion,
             searchRiver,
             login,
             search,
-            cheader
+            cheader,
+            pos
         },
         mounted() {
             this.$nextTick(()=>{

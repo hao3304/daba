@@ -26,5 +26,6 @@ export const store = {
         show:false,
         name:'',
         id:''
-    }
+    },
+    addList:[] /*没有位置需要添加的大坝*/
 }

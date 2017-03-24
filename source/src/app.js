@@ -36,9 +36,11 @@ const router = new Router({
     routes
 });
 
-import { Gender, Status } from './modules/filters'
+import { Gender, Status } from './modules/filters';
 Vue.filter('Gender', Gender);
 Vue.filter('Status', Status);
+
+import {getDbList} from './modules/service';
 
 new Vue({
     el: '#app',
@@ -53,6 +55,11 @@ new Vue({
     methods: {
         onRoute: function (v) {
             this.$router.push(v);
+        },
+        init(){
+            getDbList().then(rep=>{
+                store.addList = JSON.parse(rep);
+            })
         }
     },
     mounted: function () {
@@ -66,5 +73,6 @@ new Vue({
         });
 
         $('.loading').hide();
+        this.init();
     }
 });
