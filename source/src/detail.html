@@ -82,8 +82,8 @@
                <div  v-for="p in pic" style="position: relative">
                    <img style="width:100%;" :src="p.pictureURL" alt="p.pictureDescription">
                    <p style="text-align: center;margin:0;bottom:3px;line-height:28px;width:100%;left:0;position: absolute;background-color: rgba(0,0,0,.5);color: #fff;">{{p.pictureDescription}}</p>
-                   <p style="text-align: center" v-show="!p.pictureURL">暂无信息</p>
                </div>
+                <p style="text-align: center" v-show="pic.length == 0">暂无信息</p>
             </div>
         </el-tab-pane>
     </el-tabs>

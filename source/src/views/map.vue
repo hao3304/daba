@@ -67,7 +67,7 @@
                     <el-row>
                         <el-col :span=12 >
                             <el-form-item label='所在省份'  prop='province'>
-                                <el-select placeholder='请先选择省份' v-model='form.province'>
+                                <el-select placeholder='请先选择省份' v-model='form.province' :disabled='type=="edit"'>
                                     <el-option v-for='p in provinces' :label='p.name' :value='p.name' ></el-option>
                                 </el-select>
                             </el-form-item>
@@ -83,9 +83,10 @@
                     <el-row>
                         <el-col :span=24 v-show='form.province'  prop='dbid'>
                             <el-form-item label='选择大坝' >
-                                <el-select placeholder='请选择大坝' v-model='form.dbid' >
+                                <el-select placeholder='请选择大坝' v-model='form.dbid' v-if='type=="add"' >
                                     <el-option v-for='db in selectDB' :label='db.dbmc' :value='db.dbid' ></el-option>
                                 </el-select>
+                                <span v-else> {{editDbName}}</span>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -235,7 +236,7 @@
 <script>
     import L from 'leaflet';
     import '../components/leaflet.chinese';
-    import { getDma,setDbPosition,delDam } from '../modules/service';
+    import { getDma,setDbPosition,delDam,getDbList } from '../modules/service';
     window.Spinner = require('spin');
     require('leaflet-spin')(L);
     import '../components/zoomhome';
@@ -286,6 +287,8 @@
                 tooltip:false,
                 list:[],
                 dialog:false,
+                editDbName:'',
+                type:'add',
                 form:model(),
                 provinces:province,
                 rules:{
@@ -417,11 +420,12 @@
                         name:m.dbmc,
                         dbid:m.dbid,
                         ...m,
-                        contextmenu: this.login.id?true:false,
+                        contextmenu: true,
                         contextmenuInheritItems:false,
                         contextmenuItems: [{
                             text: '编辑大坝',
-                            index: 0
+                            index: 0,
+                            callback:this.onEditDb
                         }, {
                             text: '删除大坝',
                             index: 1,
@@ -442,7 +446,7 @@
 
                         if(m.area){
                             let latlngs = this._getGeo(m.area,',');
-                            let polygon = new L.polygon(latlngs,{fillColor:this.getRandomColor(),weight:2});
+                            let polygon = new L.polygon(latlngs,{fillColor:m.bgColor,color:m.borderColor,weight:2,dbid:m.dbid});
                             polygon.addTo(this.areaLayers);
                         }
                     }
@@ -574,9 +578,10 @@
             onAddDb(e){
                 this.dialog = true;
                 this.form = {...model()};
-                if(this.$refs.table){
+                if(this.$refs.table&&this.$refs.table.retFields){
                     this.$refs.table.retFields();
                 }
+                this.type = 'add';
                 this.form.longitude = e.latlng.lng;
                 this.form.latitude = e.latlng.lat;
             },
@@ -590,7 +595,7 @@
                         content:`是否删除该大坝（${name}）?`,
                         btn:['确定','取消'],
                         yes:()=>{
-                            layer.loading(1);
+                            layer.load(1);
                              delDam(dbid).then(rep=>{
                                 let result = eval(rep);
                                     layer.closeAll();
@@ -599,6 +604,12 @@
                                       message: result?'删除成功！':'删除失败！'
                                     });
                                     this.markerLayers.removeLayer(e.relatedTarget);
+                                    this.areaLayers.eachLayer(layer=>{
+                                        if(layer.options.dbid == dbid){
+                                            this.areaLayers.removeLayer(layer);
+                                        }
+                                    })
+                                    this.init();
                              })
                         }
                     })
@@ -610,15 +621,46 @@
                         layer.load(1);
                         setDbPosition(this.form).then(rep=>{
                             layer.closeAll();
+                            this.dialog = false;
                             if(eval(rep)){
                                 this.$message({
                                   type: 'success',
                                   message: '提交成功！'
                                 });
+
+                                getDma({dbid:this.form.dbid}).then(rep=>{
+                                    let result = rep[0];
+                                    this.list.push(result);
+                                    this.dam.list.push(result);
+                                    this.addMarker(result);
+                                    this.init();
+                                })
                             }
                         })
                     }
                 })
+            },
+            onEditDb(e){
+                let d = e.relatedTarget.options;
+                this.form = {...{
+                    dbid:d.dbid,
+                    province:d.province,
+                    city:d.city,
+                    longitude:parseFloat(d.longitude),
+                    latitude:parseFloat(d.latitude),
+                    bgColor:'',
+                    borderColor:'',
+                    riverid:d.riverid,
+                    angle:d.angle,
+                    area:d.area,
+                    length:''
+                }}
+                this.type = 'edit';
+                this.editDbName = d.name;
+                if(this.$refs.table&&this.$refs.table.retFields){
+                    this.$refs.table.retFields();
+                }
+                this.dialog = true;
             },
             onGetPos(position){
                 this.form.longitude = position.lng;
@@ -626,6 +668,11 @@
             },
             onGetPolygon(area){
                 this.form.area = area;
+            },
+            init(){
+                getDbList().then(rep=>{
+                    this.addList = JSON.parse(rep);
+                })
             }
         },
         watch:{
@@ -653,7 +700,15 @@
                     },0)
                     this.map.contextmenu.insertItem('-',1);
                     this.markerLayers.eachLayer(marker=>{
-                        marker.options.contextmenu = true;
+                        marker.options.contextmenuItems =  [{
+                            text: '编辑大坝',
+                            index: 0,
+                            callback:this.onEditDb
+                        }, {
+                            text: '删除大坝',
+                            index: 1,
+                            callback:this.onDelDb
+                        }]
                     })
 
                 }
@@ -683,6 +738,8 @@
              $(window).resize(()=>{
                 this.height = document.documentElement.clientHeight - 88;
              });
+
+             this.init();
         }
     }
 </script>

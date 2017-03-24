@@ -57,7 +57,7 @@
                     content:'确定退出当前用户？',
                     title:'提示',
                     btn:['确定','取消'],
-                    yes(){
+                    yes:()=>{
                         logout().then((rep)=>{
                             rep = JSON.parse(rep);
                             if(rep.result && rep.result == 'success'){

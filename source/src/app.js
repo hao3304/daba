@@ -55,11 +55,6 @@ new Vue({
     methods: {
         onRoute: function (v) {
             this.$router.push(v);
-        },
-        init(){
-            getDbList().then(rep=>{
-                store.addList = JSON.parse(rep);
-            })
         }
     },
     mounted: function () {
@@ -73,6 +68,5 @@ new Vue({
         });
 
         $('.loading').hide();
-        this.init();
     }
 });
