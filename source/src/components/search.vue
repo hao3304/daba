@@ -17,7 +17,7 @@
 
 </style>
 <script>
-     import { getLoginInfo } from '../modules/service';
+
 
     export default{
         store:['dam','search'],

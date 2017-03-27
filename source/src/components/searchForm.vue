@@ -31,6 +31,7 @@
             font-size:12px;
         }
     }
+
 </style>
 <script>
     import {getSearchCondition,getDma} from '../modules/service.js';

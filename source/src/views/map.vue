@@ -281,7 +281,7 @@
         data() {
             return {
                 height: document.documentElement.clientHeight - 88,
-                zoom:10,
+                zoom:4,
                 center:[38,115],
                 minZoom:2,
                 tooltip:false,
