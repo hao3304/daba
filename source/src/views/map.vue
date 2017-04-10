@@ -64,73 +64,85 @@
 
         <el-dialog size='small' v-model='dialog' >
             <el-form :model="form" label-width="85px" ref='table' :rules='rules' >
-                    <el-row>
-                        <el-col :span=12 >
-                            <el-form-item label='所在省份'  prop='province'>
-                                <el-select placeholder='请先选择省份' v-model='form.province' :disabled='type=="edit"'>
-                                    <el-option v-for='p in provinces' :label='p.name' :value='p.name' ></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span=12 v-show='form.province' >
-                            <el-form-item label='所在地市'>
-                                <el-select placeholder='请选择地市' v-model='form.city' >
-                                    <el-option v-for='c in citys' :lable='c.name' :value='c.name' ></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-                        <el-col :span=24 v-show='form.province'  prop='dbid'>
-                            <el-form-item label='选择大坝' >
-                                <el-select placeholder='请选择大坝' v-model='form.dbid' v-if='type=="add"' >
-                                    <el-option v-for='db in selectDB' :label='db.dbmc' :value='db.dbid' ></el-option>
-                                </el-select>
-                                <span v-else> {{editDbName}}</span>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row v-show='form.dbid'>
-                        <el-col :span=12  >
-                            <el-form-item label='填充颜色'>
-                                <el-color-picker v-model="form.bgColor"></el-color-picker>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span=12  >
-                            <el-form-item label='边框颜色'>
-                                <el-color-picker v-model="form.borderColor"></el-color-picker>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row v-show='form.dbid'>
-                        <el-col :span=12 >
-                            <el-form-item label='大坝角度'>
-                                <el-input  type='number' placeholder="请输入大坝角度" v-model='form.angle' ></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span=12 >
-                            <el-form-item label='大坝长度'>
-                                <el-input  type='number' placeholder="请输入大坝长度" v-model='form.length' ></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row v-show='form.dbid'>
-                        <el-col :span=12 >
-                            <el-form-item label='精度' prop='longitude' >
-                                    <el-input placeholder='请输入精度'  v-model='form.longitude' type='number' ></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span=12>
-                            <el-form-item label='维度' prop='latitude'  >
-                                <el-input placeholder='请输入纬度' v-model='form.latitude' type='number' ></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row v-if='form.dbid' :span='24'>
-                        <pos :lat='form.latitude' @draw-polygon='onGetPolygon' @change='onGetPos' :fill='form.bgColor' :border='form.borderColor'  :angle='form.angle' :lng='form.longitude' :length='form.length' ></pos>
-                    </el-row>
+                <el-row>
+                    <el-col :span=12 >
+                        <el-form-item label='所在省份'  prop='province'>
+                            <el-select placeholder='请先选择省份' v-model='form.province' :disabled='type=="edit"'>
+                                <el-option v-for='p in provinces' :label='p.name' :value='p.name' ></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span=12 v-show='form.province' >
+                        <el-form-item label='所在地市'>
+                            <el-select placeholder='请选择地市' v-model='form.city' >
+                                <el-option v-for='c in citys' :lable='c.name' :value='c.name' ></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span=24 v-show='form.province'  >
+                        <el-form-item label='选择大坝' prop='dbid' >
+                            <el-select placeholder='请选择大坝' v-model='form.dbid' v-if='type=="add"' >
+                                <el-option v-for='db in selectDB' :label='db.dbmc' :value='db.dbid' ></el-option>
+                            </el-select>
+                            <span v-else> {{editDbName}}</span>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+
+                <el-row v-show='form.dbid'>
+                    <el-col :span=24 >
+                        <el-form-item label='所属流域'>
+                            <el-cascader
+                                    :show-all-levels="false"
+                                    :options="dam.rivers"
+                                    v-model='selectRiver'
+                                    @active-item-change="handleItemChange"
+                                    :props="{value:'RiverID',label:'RiverName',children:'children'}"
+                            ></el-cascader>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span=12  >
+                        <el-form-item label='填充颜色'>
+                            <el-color-picker v-model="form.bgColor"></el-color-picker>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span=12  >
+                        <el-form-item label='边框颜色'>
+                            <el-color-picker v-model="form.borderColor"></el-color-picker>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row v-show='form.dbid'>
+                    <el-col :span=12 >
+                        <el-form-item label='大坝角度'>
+                            <el-input  type='number' placeholder="请输入大坝角度" v-model='form.angle' ></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span=12 >
+                        <el-form-item label='大坝长度'>
+                            <el-input  type='number' placeholder="请输入大坝长度" v-model='form.length' ></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row v-show='form.dbid'>
+                    <el-col :span=12 >
+                        <el-form-item label='精度' prop='longitude' >
+                            <el-input placeholder='请输入精度'  v-model='form.longitude' type='number' ></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span=12>
+                        <el-form-item label='维度' prop='latitude'  >
+                            <el-input placeholder='请输入纬度' v-model='form.latitude' type='number' ></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row v-if='form.dbid' :span='24'>
+                    <pos :lat='form.latitude' @draw-polygon='onGetPolygon' @change='onGetPos' :fill='form.bgColor' :border='form.borderColor'  :angle='form.angle' :lng='form.longitude' :length='form.length' ></pos>
+                </el-row>
             </el-form>
-                    <span slot="footer" class="dialog-footer">
+            <span slot="footer" class="dialog-footer">
                         <el-button type="primary" @click='onSaveDb'>确 定</el-button>
                         <el-button @click.native="dialog = false">取 消</el-button>
                     </span>
@@ -236,7 +248,7 @@
 <script>
     import L from 'leaflet';
     import '../components/leaflet.chinese';
-    import { getDma,setDbPosition,delDam,getDbList } from '../modules/service';
+    import { getDma,setDbPosition,delDam,getDbList,getRivers } from '../modules/service';
     window.Spinner = require('spin');
     require('leaflet-spin')(L);
     import '../components/zoomhome';
@@ -304,7 +316,8 @@
                     latitude:[
                         {required:true,message:'请输入纬度',trigger:'blur',type:'number'}
                     ]
-                }
+                },
+                selectRiver:[]
             }
         },
         computed:{
@@ -385,6 +398,12 @@
                 this.normal = L.tileLayer.chinaProvider('Google.Normal.Map',{maxZoom:18,minZoom:2}).addTo(this.map);
                 this.earth =new L.layerGroup();
                 L.tileLayer.chinaProvider('Google.Satellite.Map',{maxZoom:18,minZoom:2}).addTo(this.earth);
+
+               /* var wmsLayer = L.tileLayer.wms('http://183.247.147.228:8006/geoserver/nyc/wms?', {
+                    layers:'nyc:region_dam',
+                    crs:L.CRS.EPSG4326,
+                    format:'image/png'
+                }).addTo(this.map); */
 
                 this.markerLayers = new L.featureGroup().addTo(this.map);
                 this.measureLayers = new L.featureGroup().addTo(this.map);
@@ -619,6 +638,7 @@
                 this.$refs.table.validate(valid=>{
                     if(valid){
                         layer.load(1);
+                        this.form.riverid = this.selectRiver[this.selectRiver.length-1];
                         setDbPosition(this.form).then(rep=>{
                             layer.closeAll();
                             this.dialog = false;
@@ -673,6 +693,17 @@
                 getDbList().then(rep=>{
                     this.addList = JSON.parse(rep);
                 })
+            },
+            handleItemChange(node){
+                if(node.length == 1){
+                    getRivers({rivertype:2,riverid:node[0]}).then((rep)=>{
+                        this.dam.rivers.forEach(r=>{
+                            if(r.RiverID == node[0]){
+                                r.children = rep;
+                            }
+                        })
+                    })
+                }
             }
         },
         watch:{

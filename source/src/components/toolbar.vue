@@ -113,7 +113,6 @@
         },
         methods:{
             onToolbarClick(type){
-            debugger
                 this.active = type=='clear'?'':type;
                 this.$emit('toolbar-click',type);
             },

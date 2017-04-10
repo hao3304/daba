@@ -10,7 +10,8 @@ export const store = {
     },
     dam:{
         list:[],
-        legend:[]
+        legend:[],
+        rivers:[]
     },
     layer:{
         mode:'全国',

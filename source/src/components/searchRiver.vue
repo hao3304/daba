@@ -22,7 +22,7 @@
     import Vue from 'vue/dist/vue.js';
 
     export default{
-        store:['container','rightSpan'],
+        store:['container','rightSpan','dam'],
         data(){
             return{
                 treeData:[],
@@ -53,10 +53,12 @@
             },
             render(){
                 getRivers().then((rep)=>{
+
                     this.treeData = rep.map((r)=>{
                         r.children=[];
                         return r;
                     });
+                    this.dam.rivers = this.treeData;
                 })
             },
             loadNode(node,resolve){
@@ -74,7 +76,7 @@
             onNodeClick(node){
                if(node.RiverType > 1){
                     getRiverDam({riverid:node.RiverID}).then((rep)=>{
-                        debugger
+
                     })
                }
             },

@@ -40,7 +40,6 @@ import { Gender, Status } from './modules/filters';
 Vue.filter('Gender', Gender);
 Vue.filter('Status', Status);
 
-import {getDbList} from './modules/service';
 
 new Vue({
     el: '#app',
