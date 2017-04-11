@@ -9,7 +9,7 @@
         </el-col>
         <el-col :span="center_span" class='main-wrap' style="height: 100%;position:relative">
             <div id="map"  style="height: 100%"></div>
-            <clegend @change='filterDam' @tooltip-change='onTooltipChange' style="position: absolute;z-index: 1000;right: 10px;top:50px;"></clegend>
+            <clegend @change='filterDam' @area-change='onAreaChange' @tooltip-change='onTooltipChange' style="position: absolute;z-index: 1000;right: 10px;top:50px;"></clegend>
             <layers @change='onLayerChange' style="bottom: 10px;right: 10px;"></layers>
             <search></search>
             <login></login>
@@ -148,6 +148,34 @@
                     </span>
         </el-dialog>
 
+        <el-dialog size='tiny' v-model='around_dialog'>
+            <el-form :model='around_form' label-width='60px' :rules='rules2' ref='around-form' >
+                <el-row>
+                    <el-col :span=24 >
+                        <el-form-item label='经度' prop='lng'>
+                            <el-input type='number' placehoder='请输入经度' v-model='around_form.lng' ></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span=24 >
+                        <el-form-item label='维度' prop='lat'>
+                            <el-input type='number' placehoder='请输入维度' v-model='around_form.lat' ></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span=24 >
+                        <el-form-item label='距离' prop='distance'>
+                            <el-input type='number' placehoder='请输入距离' v-model.number='around_form.distance' >
+                                <template slot="append">千米</template>
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+
+                </el-row>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                        <el-button type="primary" @click='onSearchAround'>查 询</el-button>
+                        <el-button @click.native="around_dialog = false">取 消</el-button>
+                    </span>
+        </el-dialog>
     </el-row>
 </template>
 <style lang='less'>
@@ -288,11 +316,12 @@
         }
     }
 
+
     export default{
         store:['dam','layer','rightSpan','search','container','login','addList'],
         data() {
             return {
-                height: document.documentElement.clientHeight - 88,
+                height: document.documentElement.clientHeight - 40,
                 zoom:4,
                 center:[38,115],
                 minZoom:2,
@@ -317,7 +346,24 @@
                         {required:true,message:'请输入纬度',trigger:'blur',type:'number'}
                     ]
                 },
-                selectRiver:[]
+                rules2:{
+                    lat:[
+                         {required:true,message:'请输入纬度',trigger:'blur',type:'number'}
+                    ],
+                    lng:[
+                        {required:true,message:'请输入精度',trigger:'blur',type:'number'}
+                    ],
+                    distance:[
+                        {required:true,message:'请输入距离',trigger:'blur',type:'number'}
+                    ]
+                },
+                selectRiver:[],
+                around_dialog:false,
+                around_form:{
+                    lng:null,
+                    lat:null,
+                    distance:null
+                }
             }
         },
         computed:{
@@ -378,6 +424,16 @@
                     contextmenu: true,
                     contextmenuWidth: 140,
                     contextmenuItems: [
+                    {
+                        text: '周边查询',
+                        callback:(e)=>{
+                            this.around_form = {
+                                ...{lat:e.latlng.lat,
+                                lng:e.latlng.lng}
+                            }
+                            this.around_dialog = true;
+                        }
+                    },
                     {
                         text: '放大',
                         callback:()=>{
@@ -695,14 +751,43 @@
                 })
             },
             handleItemChange(node){
-                if(node.length == 1){
-                    getRivers({rivertype:2,riverid:node[0]}).then((rep)=>{
-                        this.dam.rivers.forEach(r=>{
-                            if(r.RiverID == node[0]){
-                                r.children = rep;
-                            }
-                        })
+                getRivers({rivertype:2,riverid:node[0]}).then((rep)=>{
+                    this.dam.rivers.forEach(r=>{
+                        if(r.RiverID == node[0]){
+                            r.children = rep;
+                        }
                     })
+                })
+            },
+            onSearchAround(){
+                this.$refs['around-form'].validate(valid => {
+                    if(valid) {
+                        let list = [];
+                        this.dam.list.forEach(marker => {
+                                let lat = marker.latitude,
+                                    lng = marker.longitude;
+                                    if(lat&&lng) {
+                                        let distance = this.map.distance([this.around_form.lat,this.around_form.lng],[parseFloat(lat),parseFloat(lng)])
+
+                                        if(distance/1000 < this.around_form.distance) {
+                                            list.push(marker);
+                                        }
+                                    }
+                        })
+
+                            this.rightSpan.list = list;
+                            this.rightSpan.name = '周边查询结果';
+                            this.container.right = true;
+                            this.around_dialog = false;
+
+                    }
+                })
+            },
+            onAreaChange(v) {
+                if(v){
+                    this.regionLayers.addTo(this.map);
+                }else{
+                    this.map.removeLayer(this.regionLayers);
                 }
             }
         },

@@ -35,7 +35,6 @@
 </style>
 <script>
     import {getSearchCondition,getDma} from '../modules/service.js';
-    import Vue from 'vue/dist/vue.js';
 
     export default{
         store:['container','rightSpan'],
@@ -70,7 +69,7 @@
                 getSearchCondition().then((rep)=>{
                     rep = JSON.parse(rep);
                     for(let i in rep){
-                        Vue.set(this.model,rep[i].conditionCode,rep[i].conditionType == 'checkbox'?[]:'');
+                        this.$set(this.model,rep[i].conditionCode,rep[i].conditionType == 'checkbox'?[]:'');
                     }
                     this._m = {...this.model};
                     this.form = rep;

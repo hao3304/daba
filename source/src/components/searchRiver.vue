@@ -18,7 +18,7 @@
 
 </style>
 <script>
-    import {getRiverDam,getRivers} from '../modules/service.js';
+    import { getRiverDam, getRivers } from '../modules/service.js';
     import Vue from 'vue/dist/vue.js';
 
     export default{
@@ -38,13 +38,7 @@
                 return this.query?'close':'search';
             },
             filterData(){
-                if(this.query){
-                    return this.treeData.filter((t)=>{
-                          return t.itemName.indexOf(this.query)>-1;
-                    })
-                }else{
-                    return this.treeData;
-                }
+               return this.treeData;
             }
         },
         methods:{
@@ -53,7 +47,6 @@
             },
             render(){
                 getRivers().then((rep)=>{
-
                     this.treeData = rep.map((r)=>{
                         r.children=[];
                         return r;
@@ -76,7 +69,6 @@
             onNodeClick(node){
                if(node.RiverType > 1){
                     getRiverDam({riverid:node.RiverID}).then((rep)=>{
-
                     })
                }
             },

@@ -46,19 +46,20 @@
                     <div class="control-list">
                         <span>显示区域</span>
                         <el-switch
+                                v-model='area'
                                 style="float: right"
                                 on-text="显示"
                                 off-text="隐藏">
                         </el-switch>
                     </div>
-                    <div class="control-list">
-                        <span>显示河流</span>
-                        <el-switch
-                                style="float: right"
-                                on-text="显示"
-                                off-text="隐藏">
-                        </el-switch>
-                    </div>
+                    <!--<div class="control-list">-->
+                        <!--<span>显示河流</span>-->
+                        <!--<el-switch-->
+                                <!--style="float: right"-->
+                                <!--on-text="显示"-->
+                                <!--off-text="隐藏">-->
+                        <!--</el-switch>-->
+                    <!--</div>-->
                 </el-tab-pane>
             </el-tabs>
         </transition>
@@ -182,6 +183,7 @@
                 info:false,
                 tooltip:false,
                 loading:false,
+                area:true,
                 tab:'first'
             }
         },
@@ -220,6 +222,9 @@
         watch:{
             tooltip(t){
                 this.$emit('tooltip-change',t);
+            },
+            area(t){
+                this.$emit('area-change',t);
             },
             layer:{
                 deep:true,
