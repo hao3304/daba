@@ -751,12 +751,24 @@
                 })
             },
             handleItemChange(node){
-                getRivers({rivertype:2,riverid:node[0]}).then((rep)=>{
-                    this.dam.rivers.forEach(r=>{
-                        if(r.RiverID == node[0]){
-                            r.children = rep;
-                        }
-                    })
+                let getRiver = (id,data,children)=>{
+                       for(var i = 0;i < data.length; i++){
+                            if(data[i].RiverID == id){
+                                children.map(c=>{c.children = []})
+                                if(children.length == 0){
+                                    delete data[i].children;
+                                }else{
+                                    data[i].children = children;
+                                }
+                            }
+                            if(data[i].children&&data[i].children.length>0){
+                                getRiver(id,data[i].children,children);
+                            }
+                       }
+                }
+
+                getRivers({rivertype:2,riverid:node[node.length-1]}).then((rep)=>{
+                    getRiver(node[node.length - 1],this.dam.rivers,rep||[]);
                 })
             },
             onSearchAround(){

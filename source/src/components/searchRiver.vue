@@ -67,9 +67,17 @@
                 }
             },
             onNodeClick(node){
-               if(node.RiverType > 1){
-                    getRiverDam({riverid:node.RiverID}).then((rep)=>{
-                    })
+               let list = [];
+               this.dam.list.forEach(d=>{
+                    if(d.RiverID == node.RiverID){
+                        list.push(d);
+                    }
+               });
+
+               if(list.length>0){
+                    this.rightSpan.list = list;
+                    this.rightSpan.name = '流域查询结果';
+                    this.container.right = true;
                }
             },
             onIconClick(){this.query =''}
