@@ -496,7 +496,7 @@
             },
             renderMarkers(rep){
                 this.markerLayers.clearLayers();
-                this.this.areaLayers.clearLayers();
+                this.areaLayers.clearLayers();
                 rep.forEach((m)=>{
                     this.addMarker(m);
                 });
@@ -761,7 +761,7 @@
                     length:''
                 }}
                 this.type = 'edit';
-                this.editDbName = d.name;
+                this.editDbName = d.name || d.dbmc;
                 if(this.$refs.table&&this.$refs.table.retFields){
                     this.$refs.table.retFields();
                 }
