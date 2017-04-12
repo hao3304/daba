@@ -59,6 +59,19 @@
                         prop='constructState'
                 >
                 </el-table-column>
+                <el-table-column
+                        fixed="right"
+                        label="操作"
+                        width="80"
+                        v-if='login.id'
+                        inline-template
+                >
+                    <span>
+                        <a href='javascript:;' @click='onEditDb(row)'><i class='el-icon-edit'></i></a>
+                        &nbsp;
+                        <a href='javascript:;' @click='onDelDb(row)'><i class='el-icon-delete2'></i></a>
+                    </span>
+                </el-table-column>
             </el-table>
         </el-col>
 
@@ -483,6 +496,7 @@
             },
             renderMarkers(rep){
                 this.markerLayers.clearLayers();
+                this.this.areaLayers.clearLayers();
                 rep.forEach((m)=>{
                     this.addMarker(m);
                 });
@@ -508,11 +522,15 @@
                         contextmenuItems: [{
                             text: '编辑大坝',
                             index: 0,
-                            callback:this.onEditDb
+                            callback:(e)=>{
+                                this.onEditDb(e.relatedTarget.options)
+                            }
                         }, {
                             text: '删除大坝',
                             index: 1,
-                            callback:this.onDelDb
+                            callback:(e)=>{
+                                this.this.onDelDb(e.relatedTarget.options);
+                            }
                         }]
 
                         }).addTo(this.markerLayers);
@@ -672,9 +690,9 @@
                 this.form.longitude = e.latlng.lng;
                 this.form.latitude = e.latlng.lat;
             },
-            onDelDb(e){
-                let dbid = e.relatedTarget.options.dbid;
-                let name = e.relatedTarget.options.name;
+            onDelDb(options){
+                let dbid = options.dbid;
+                let name = options.name;
                 if(dbid){
                     layer.open({
                         title:'提示',
@@ -728,8 +746,7 @@
                     }
                 })
             },
-            onEditDb(e){
-                let d = e.relatedTarget.options;
+            onEditDb(d){
                 this.form = {...{
                     dbid:d.dbid,
                     province:d.province,
@@ -841,11 +858,7 @@
                     text:'添加大坝',
                     callback:this.onAddDb
                     },0)
-                    this.map.contextmenu.insertItem({
-                    text:'大坝管理',
-                    callback:this.onManageDb
-                    },1)
-                    this.map.contextmenu.insertItem('-',2);
+                    this.map.contextmenu.insertItem('-',1);
                     this.markerLayers.eachLayer(marker=>{
                         marker.options.contextmenuItems =  [{
                             text: '编辑大坝',
