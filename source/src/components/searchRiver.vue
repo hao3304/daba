@@ -18,7 +18,7 @@
 
 </style>
 <script>
-    import { getRiverDam, getRivers } from '../modules/service.js';
+    import { getRiverDam, getRivers,querySubRiverIDs } from '../modules/service.js';
     import Vue from 'vue/dist/vue.js';
 
     export default{
@@ -68,17 +68,27 @@
             },
             onNodeClick(node){
                let list = [];
-               this.dam.list.forEach(d=>{
-                    if(d.RiverID == node.RiverID){
-                        list.push(d);
-                    }
-               });
+               this.rightSpan.list = [];
+               this.container.right = false;
+               querySubRiverIDs({riverid:node.RiverID}).then(rep=>{
+                    if(rep){
+                        let ll = rep.split(',');
+                        if(ll.length>0){
 
-               if(list.length>0){
-                    this.rightSpan.list = list;
-                    this.rightSpan.name = '流域查询结果';
-                    this.container.right = true;
-               }
+                             this.dam.list.forEach(d=>{
+                                if(ll.indexOf(d.dbid)>-1){
+                                    list.push(d);
+                                }
+                            });
+
+                             if(list.length>0){
+                                this.rightSpan.list = list;
+                                this.rightSpan.name = node.RiverName;
+                                this.container.right = true;
+                            }
+                        }
+                    }
+               })
             },
             onIconClick(){this.query =''}
         },
