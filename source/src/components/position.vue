@@ -29,23 +29,25 @@
         },
         methods:{
             render(){
-                 this.map = new L.map('map-position',{
-                    center:[38,115],
-                    zoom:8,
-                    minZoom:2,
-                    attributionControl:false,
-                });
-                L.tileLayer.chinaProvider('Google.Satellite.Map',{maxZoom:18,minZoom:2}).addTo(this.map);
-                let scale = new L.Control.Scale().addTo(this.map);
+                if(!this.map){
+                     this.map = new L.map('map-position',{
+                        center:[38,115],
+                        zoom:8,
+                        minZoom:2,
+                        attributionControl:false,
+                    });
+                    L.tileLayer.chinaProvider('Google.Satellite.Map',{maxZoom:18,minZoom:2}).addTo(this.map);
+                    let scale = new L.Control.Scale().addTo(this.map);
 
-                this.polygonLayer = new L.featureGroup().addTo(this.map);
+                    this.polygonLayer = new L.featureGroup().addTo(this.map);
 
-                this.map.on('click',e=>{
-                    if(!this.marker){
-                        this.addMarker(e.latlng);
-                        this.$emit('change',e.latlng);
-                    }
-                });
+                    this.map.on('click',e=>{
+                        if(!this.marker){
+                            this.addMarker(e.latlng);
+                            this.$emit('change',e.latlng);
+                        }
+                    });
+                }
 
                 if(this.lat&&this.lng){
                     this.addMarker([this.lat,this.lng]);
@@ -53,6 +55,9 @@
                 }
             },
             addMarker(latlng){
+                if(this.marker){
+                    this.map.removeLayer(this.marker);
+                }
                 this.marker = new L.marker(latlng,{draggable:true}).bindTooltip('可以拖动')
                 this.marker.addTo(this.map).openTooltip();
                 this.marker.on('dragend',e=>{
@@ -63,10 +68,10 @@
                 })
             },
             drawPolygon(){
-                if(this.marker&&this.length&&this.angle){
+                if(this.marker&&this.angle){
                     this.polygonLayer.clearLayers();
                     let width = 0.0009000009000009;
-                    let length = this.length/1000;
+                    let length = 0.003150003150003;
                     if (length < 0.002) length = 0.002;
                     let angle = 360 - this.angle;
                     let x = this.lng;
@@ -119,12 +124,17 @@
             },
             border(){
                 this.drawPolygon();
+            },
+            lat(){
+            this.$nextTick(()=>{
+                    this.render();
+                });
             }
         },
         mounted(){
-            this.$nextTick(()=>{
-                this.render();
-            });
+              this.$nextTick(()=>{
+                    this.render();
+              });
         }
     }
 </script>

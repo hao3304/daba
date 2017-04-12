@@ -67,34 +67,32 @@
                 <el-row>
                     <el-col :span=12 >
                         <el-form-item label='所在省份'  prop='province'>
-                            <el-select placeholder='请先选择省份' v-model='form.province' :disabled='type=="edit"'>
+                            <el-select placeholder='请先选择省份' size='small' v-model='form.province' :disabled='type=="edit"'>
                                 <el-option v-for='p in provinces' :label='p.name' :value='p.name' ></el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                     <el-col :span=12 v-show='form.province' >
                         <el-form-item label='所在地市'>
-                            <el-select placeholder='请选择地市' v-model='form.city' >
+                            <el-select placeholder='请选择地市'  size='small' v-model='form.city' >
                                 <el-option v-for='c in citys' :lable='c.name' :value='c.name' ></el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span=24 v-show='form.province'  >
+                    <el-col :span=12 v-show='form.province'  >
                         <el-form-item label='选择大坝' prop='dbid' >
-                            <el-select placeholder='请选择大坝' v-model='form.dbid' v-if='type=="add"' >
+                            <el-select placeholder='请选择大坝'  size='small' v-model='form.dbid' v-if='type=="add"' >
                                 <el-option v-for='db in selectDB' :label='db.dbmc' :value='db.dbid' ></el-option>
                             </el-select>
                             <span v-else> {{editDbName}}</span>
                         </el-form-item>
                     </el-col>
-                </el-row>
-
-                <el-row v-show='form.dbid'>
-                    <el-col :span=24 >
+                    <el-col :span=12  v-show='form.dbid'>
                         <el-form-item label='所属流域'>
                             <el-cascader
+                                    size='small'
                                     :show-all-levels="false"
                                     :options="dam.rivers"
                                     v-model='selectRiver'
@@ -103,9 +101,13 @@
                             ></el-cascader>
                         </el-form-item>
                     </el-col>
+                </el-row>
+
+                <el-row v-show='form.dbid'>
+
                     <el-col :span=12  >
                         <el-form-item label='填充颜色'>
-                            <el-color-picker v-model="form.bgColor"></el-color-picker>
+                            <el-color-picker  v-model="form.bgColor"></el-color-picker>
                         </el-form-item>
                     </el-col>
                     <el-col :span=12  >
@@ -117,24 +119,24 @@
                 <el-row v-show='form.dbid'>
                     <el-col :span=12 >
                         <el-form-item label='大坝角度'>
-                            <el-input  type='number' placeholder="请输入大坝角度" v-model='form.angle' ></el-input>
+                            <el-input size='small' type='number' placeholder="请输入大坝角度" v-model='form.angle' ></el-input>
                         </el-form-item>
                     </el-col>
-                    <el-col :span=12 >
-                        <el-form-item label='大坝长度'>
-                            <el-input  type='number' placeholder="请输入大坝长度" v-model='form.length' ></el-input>
-                        </el-form-item>
-                    </el-col>
+                    <!--<el-col :span=12 >-->
+                        <!--<el-form-item label='大坝长度'>-->
+                            <!--<el-input size='small' type='number' placeholder="请输入大坝长度" v-model='form.length' ></el-input>-->
+                        <!--</el-form-item>-->
+                    <!--</el-col>-->
                 </el-row>
                 <el-row v-show='form.dbid'>
                     <el-col :span=12 >
                         <el-form-item label='精度' prop='longitude' >
-                            <el-input placeholder='请输入精度'  v-model='form.longitude' type='number' ></el-input>
+                            <el-input size='small' placeholder='请输入精度'  v-model='form.longitude' type='number' ></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span=12>
                         <el-form-item label='维度' prop='latitude'  >
-                            <el-input placeholder='请输入纬度' v-model='form.latitude' type='number' ></el-input>
+                            <el-input size='small' placeholder='请输入纬度' v-model='form.latitude' type='number' ></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -184,6 +186,12 @@
         .leaflet-popup-content{
             margin: 5px;
         }
+    }
+
+    .marker-hover{
+       img{
+           transform: scale(1) !important;
+       }
     }
 
     .small-icon{
@@ -511,11 +519,15 @@
                         marker.bindPopup('<iframe src="/detail.html?id='+m.dbid+'" style="border:none;width:360px;height:300px;" ></iframe>',{maxWidth:352,className:'custom-popup',minHeight:300});
 
                         marker.on('mouseover',(m)=>{
+                            $(m.target._icon).addClass('marker-hover');
+
+
                             if(!this.tooltip){
-                                 m.target.bindTooltip(m.target.options.name);
+                                 m.target.bindTooltip(m.target.options.name,{direction:'top',offset:[0,-10]});
                                  m.target.openTooltip();
                             }
                         }).on('mouseout',(m)=>{
+                           $(m.target._icon).removeClass('marker-hover');
                             m.target.unbindTooltip();
                         });
 
@@ -801,6 +813,9 @@
                 }else{
                     this.map.removeLayer(this.regionLayers);
                 }
+            },
+            onManageDb() {
+            
             }
         },
         watch:{
@@ -826,7 +841,11 @@
                     text:'添加大坝',
                     callback:this.onAddDb
                     },0)
-                    this.map.contextmenu.insertItem('-',1);
+                    this.map.contextmenu.insertItem({
+                    text:'大坝管理',
+                    callback:this.onManageDb
+                    },1)
+                    this.map.contextmenu.insertItem('-',2);
                     this.markerLayers.eachLayer(marker=>{
                         marker.options.contextmenuItems =  [{
                             text: '编辑大坝',
