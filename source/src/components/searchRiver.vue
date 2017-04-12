@@ -22,7 +22,7 @@
     import Vue from 'vue/dist/vue.js';
 
     export default{
-        store:['container','rightSpan','dam'],
+        store:['container','rightSpan','dam','_map'],
         data(){
             return{
                 treeData:[],
@@ -70,11 +70,11 @@
                let list = [];
                this.rightSpan.list = [];
                this.container.right = false;
+                this._map.spin(true);
                querySubRiverIDs({riverid:node.RiverID}).then(rep=>{
                     if(rep){
                         let ll = rep.split(',');
                         if(ll.length>0){
-
                              this.dam.list.forEach(d=>{
                                 if(ll.indexOf(d.dbid)>-1){
                                     list.push(d);
@@ -88,6 +88,7 @@
                             }
                         }
                     }
+                    this._map.spin(false);
                })
             },
             onIconClick(){this.query =''}

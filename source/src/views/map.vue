@@ -355,7 +355,7 @@
 
 
     export default{
-        store:['dam','layer','rightSpan','search','container','login','addList'],
+        store:['dam','layer','rightSpan','search','container','login','addList','_map'],
         data() {
             return {
                 height: document.documentElement.clientHeight - 40,
@@ -513,6 +513,7 @@
 
                 this.map.spin(true);
                 this.getDamList();
+                this._map = this.map;
             },
             renderMarkers(rep){
                 this.markerLayers.clearLayers();

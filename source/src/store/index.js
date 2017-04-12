@@ -8,6 +8,7 @@ export const store = {
         left:false,
         right:false
     },
+    _map:null,
     dam:{
         list:[],
         legend:[],
