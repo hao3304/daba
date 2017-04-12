@@ -20,12 +20,14 @@
                 <span class='title'>{{rightSpan.name}}</span>
                 <el-button style='float:right;color:#20a0ff;margin-top:2px;' @click='onCloseRight' type="text" icon='circle-close'></el-button>
             </div>
-            <el-table :height="height" highlight-current-row @row-click='flyTo'   border class='small-table' :data="rightSpan.list"  style="width: 100%">
+            <el-table :height="height - 30" highlight-current-row @row-click='flyTo'   border class='small-table' :data="currentList"  style="width: 100%">
                 <el-table-column
-                        type='index'
                         label="#"
+                        type='index'
                         width='60'
-                >
+                >   <template  scope="scope">
+                    <span>{{scope.$index + (currentPage - 1)*50 +1}}</span>
+                </template>
                 </el-table-column>
                 <el-table-column
                         label="名称"
@@ -73,6 +75,16 @@
                     </span>
                 </el-table-column>
             </el-table>
+            <div style="text-align:center;">
+                <el-pagination
+                        small
+                        page-size='50'
+                        :current-page='currentPage'
+                        layout="prev, pager, next"
+                        @current-change='onCurrentChange'
+                        :total="rightSpan.list.length">
+                </el-pagination>
+            </div>
         </el-col>
 
         <el-dialog size='small' v-model='dialog' >
@@ -205,6 +217,10 @@
        img{
            transform: scale(1) !important;
        }
+    }
+
+    .el-form-item{
+        margin-bottom: 4px !important;
     }
 
     .small-icon{
@@ -384,7 +400,8 @@
                     lng:null,
                     lat:null,
                     distance:null
-                }
+                },
+                currentPage:1
             }
         },
         computed:{
@@ -431,6 +448,9 @@
                 return this.addList.filter(db=>{
                     return db.sf == this.form.province && db.isplaced == 0
                 })
+            },
+            currentList() {
+                return this.rightSpan.list.slice((this.currentPage-1)*50,this.currentPage*50);
             }
         },
         methods:{
@@ -833,6 +853,9 @@
             },
             onManageDb() {
             
+            },
+            onCurrentChange(p) {
+                this.currentPage = p;
             }
         },
         watch:{
@@ -844,6 +867,9 @@
             },
             search(v){
                 this.flyTo(v);
+            },
+            'rightSpan.list'(){
+                this.currentPage = 1;
             },
             zoom(z){
                 if(z >= 12){
@@ -858,7 +884,15 @@
                     text:'添加大坝',
                     callback:this.onAddDb
                     },0)
-                    this.map.contextmenu.insertItem('-',1);
+                     this.map.contextmenu.insertItem({
+                    text:'大坝管理',
+                    callback:()=>{
+                        this.rightSpan.list = this.dam.list;
+                        this.rightSpan.name = '大坝管理';
+                        this.container.right = true;
+                    }
+                    },2)
+                    this.map.contextmenu.insertItem('-',3);
                     this.markerLayers.eachLayer(marker=>{
                         marker.options.contextmenuItems =  [{
                             text: '编辑大坝',
