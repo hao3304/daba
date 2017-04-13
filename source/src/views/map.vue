@@ -87,8 +87,8 @@
             </div>
         </el-col>
 
-        <el-dialog size='small' v-model='dialog' >
-            <el-form :model="form" label-width="85px" ref='table' :rules='rules' >
+        <el-dialog size='small' v-model='dialog'  >
+            <el-form :model="form" label-width="85px" ref='table' :rules='rules'  class='custom-form' >
                 <el-row>
                     <el-col :span=12 >
                         <el-form-item label='所在省份'  prop='province'>
@@ -155,8 +155,8 @@
                 </el-row>
                 <el-row v-show='form.dbid'>
                     <el-col :span=12 >
-                        <el-form-item label='精度' prop='longitude' >
-                            <el-input size='small' placeholder='请输入精度'  v-model='form.longitude' type='number' ></el-input>
+                        <el-form-item label='经度' prop='longitude' >
+                            <el-input size='small' placeholder='请输入经度'  v-model='form.longitude' type='number' ></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span=12>
@@ -218,11 +218,11 @@
            transform: scale(1) !important;
        }
     }
-
-    .el-form-item{
-        margin-bottom: 4px !important;
+    .custom-form{
+        .el-form-item{
+            margin-bottom: 4px !important;
+        }
     }
-
     .small-icon{
         .my-div-icon{
             img{
@@ -377,7 +377,7 @@
                         {required:true,message:'请选择大坝',trigger:'blur'}
                     ],
                     longitude:[
-                        {required:true,message:'请输入精度',trigger:'blur',type:'number'}
+                        {required:true,message:'请输入经度',trigger:'blur',type:'number'}
                     ],
                     latitude:[
                         {required:true,message:'请输入纬度',trigger:'blur',type:'number'}
@@ -388,7 +388,7 @@
                          {required:true,message:'请输入纬度',trigger:'blur',type:'number'}
                     ],
                     lng:[
-                        {required:true,message:'请输入精度',trigger:'blur',type:'number'}
+                        {required:true,message:'请输入经度',trigger:'blur',type:'number'}
                     ],
                     distance:[
                         {required:true,message:'请输入距离',trigger:'blur',type:'number'}
