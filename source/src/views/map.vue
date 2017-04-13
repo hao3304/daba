@@ -115,7 +115,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span=12  v-show='form.dbid'>
-                        <el-form-item label='所属流域'>
+                        <el-form-item label='所在河流'>
                             <el-cascader
                                     size='small'
                                     :show-all-levels="false"
@@ -160,7 +160,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span=12>
-                        <el-form-item label='维度' prop='latitude'  >
+                        <el-form-item label='纬度' prop='latitude'  >
                             <el-input size='small' placeholder='请输入纬度' v-model='form.latitude' type='number' ></el-input>
                         </el-form-item>
                     </el-col>
@@ -184,8 +184,8 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span=24 >
-                        <el-form-item label='维度' prop='lat'>
-                            <el-input type='number' placehoder='请输入维度' v-model='around_form.lat' ></el-input>
+                        <el-form-item label='纬度' prop='lat'>
+                            <el-input type='number' placehoder='请输入纬度' v-model='around_form.lat' ></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span=24 >
@@ -538,7 +538,7 @@
                         name:m.dbmc,
                         dbid:m.dbid,
                         ...m,
-                        contextmenu: true,
+                        contextmenu: !!this.login.id,
                         contextmenuInheritItems:false,
                         contextmenuItems: [{
                             text: '编辑大坝',
@@ -894,6 +894,7 @@
                     }
                     },2)
                     this.map.contextmenu.insertItem('-',3);
+
                     this.markerLayers.eachLayer(marker=>{
                         marker.options.contextmenuItems =  [{
                             text: '编辑大坝',

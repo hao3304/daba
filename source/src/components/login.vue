@@ -104,6 +104,7 @@
                                   message: `用户【${this.login.name}】登录成功`,
                                   type: 'success'
                                 });
+                                window.location.reload();
                             }else{
                                  let hint = rep[0].hint;
                                  this.$message({
