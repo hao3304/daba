@@ -9,7 +9,7 @@
             <el-button style='float:right;color:#20a0ff;margin-top:2px;' @click='onClose' type="text" icon='circle-close'></el-button>
         </div>
         <div  class='search-river'>
-            <el-tree :data='filterData' lazy highlight-current accordion @node-click='onNodeClick'  :load="loadNode" :props="props" >
+            <el-tree :render-content="renderContent" :data='filterData'  highlight-current accordion   :props="props" >
             </el-tree>
         </div>
     </div>
@@ -27,7 +27,7 @@
             return{
                 treeData:[],
                 props:{
-                label: 'RiverName',
+                label: 'name',
                 children: 'children'
                 },
                 query:''
@@ -47,31 +47,43 @@
             },
             render(){
                 getRivers().then((rep)=>{
-                    this.treeData = rep.map((r)=>{
-                        r.children=[];
-                        return r;
-                    });
+                    this.treeData = this.transData(JSON.parse(rep));
                     this.dam.rivers = this.treeData;
                 })
             },
-            loadNode(node,resolve){
-                if(node.data.RiverType){
-                         getRivers({rivertype:2,riverid:node.data.RiverID}).then((rep)=>{
-                            resolve(rep.map((r)=>{
-                                r.children = [];
-                                return r;
-                            }))
-                        })
-                }else{
-                    return resolve([]);
-                }
+            transData(data) {
+                   let list = [];
+                   var getById = function(d){
+                        let r = [];
+                        for(var i in data) {
+                            if(data[i].pId == d.id) {
+                                r.push(data[i]);
+                            }
+
+                        }
+                            if(r.length > 0 ){
+                                d.children = r;
+                                for(var i in r){
+                                    getById(r[i]);
+                                }
+                            }
+                   }
+
+                   for(var i in data){
+                    if(data[i].pId == 0){
+                        data[i].children = [];
+                        list.push(data[i]);
+                        getById(data[i]);
+                    }
+                   }
+                   return list;
             },
             onNodeClick(node){
                let list = [];
                this.rightSpan.list = [];
                this.container.right = false;
                 this._map.spin(true);
-               querySubRiverIDs({riverid:node.RiverID}).then(rep=>{
+               querySubRiverIDs({riverid:node.id}).then(rep=>{
                     if(rep){
                         let ll = rep.split(',');
                         if(ll.length>0){
@@ -91,7 +103,28 @@
                     this._map.spin(false);
                })
             },
-            onIconClick(){this.query =''}
+            onIconClick(){this.query =''},
+            renderContent(h, { node, data, store }){
+            var self = this;
+             return h('span',{
+                on:{
+                    dblclick(){
+                        self.onNodeClick(data);
+                    }
+                }
+             },[
+                h('span',{},[
+                    h('span',{
+                        domProps:{
+                            innerHTML:data.name
+                        },
+                        style: {
+                            fontSize:'14px'
+                        }
+                    })
+                ])
+             ])
+            }
         },
         mounted(){
             $('.search-river').slimScroll({ height: document.documentElement.clientHeight - 37 });

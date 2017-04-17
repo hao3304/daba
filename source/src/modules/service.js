@@ -37,7 +37,7 @@ export const getPlaceNames = (params={})=>{
 };
 
 export const getCustomPlaceNames = ()=>co($.get('/DataService.svc/CustomPlaceNames'));
-export const getRivers = (params={rivertype:1})=>co($.get('/DataService.svc/Rivers',params));
+export const getRivers = ()=>co($.get('/GIS/searchDam/getRiverTree.jsp'));
 export const getRiverDam = (params)=>co($.get('/DataService.svc/RiverDam',params));
 export const queryByCustomNames = (params)=>co($.get('/DataService.svc/CustomPlaceNamesByCustomName',params));
 export const querySubRiverIDs = (params)=>co($.get('/DataService.svc/SubRiverIDs',params));
