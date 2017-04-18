@@ -549,7 +549,7 @@
                             text: '删除大坝',
                             index: 1,
                             callback:(e)=>{
-                                this.this.onDelDb(e.relatedTarget.options);
+                                this.onDelDb(e.relatedTarget.options);
                             }
                         }]
 
