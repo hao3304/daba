@@ -121,8 +121,7 @@
                                     :show-all-levels="false"
                                     :options="dam.rivers"
                                     v-model='selectRiver'
-                                    @active-item-change="handleItemChange"
-                                    :props="{value:'RiverID',label:'RiverName',children:'children'}"
+                                    :props="{value:'id',label:'name',children:'children'}"
                             ></el-cascader>
                         </el-form-item>
                     </el-col>
@@ -798,27 +797,6 @@
             init(){
                 getDbList().then(rep=>{
                     this.addList = JSON.parse(rep);
-                })
-            },
-            handleItemChange(node){
-                let getRiver = (id,data,children)=>{
-                       for(var i = 0;i < data.length; i++){
-                            if(data[i].RiverID == id){
-                                children.map(c=>{c.children = []})
-                                if(children.length == 0){
-                                    delete data[i].children;
-                                }else{
-                                    data[i].children = children;
-                                }
-                            }
-                            if(data[i].children&&data[i].children.length>0){
-                                getRiver(id,data[i].children,children);
-                            }
-                       }
-                }
-
-                getRivers({rivertype:2,riverid:node[node.length-1]}).then((rep)=>{
-                    getRiver(node[node.length - 1],this.dam.rivers,rep||[]);
                 })
             },
             onSearchAround(){
