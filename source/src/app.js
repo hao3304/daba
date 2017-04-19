@@ -27,9 +27,11 @@ import slider from './components/slider.vue';
 import cheader from './components/header.vue';
 
 import map from './views/map.vue';
+import itree from './views/test.vue';
 import {store} from './store';
 const routes = [
-    { path: '/', component: map }
+    { path: '/', component: map },
+    { path: '/test', component: itree },
 ];
 
 const router = new Router({

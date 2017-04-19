@@ -34,6 +34,7 @@
     "vue": "^2.1.10",
     "vue-ls": "^2.1.2",
     "vue-router": "^2.2.0",
-    "vue-stash": "^2.0.1-beta"
+    "vue-stash": "^2.0.1-beta",
+    "ztree": "^3.5.24"
   }
 }

@@ -116,13 +116,14 @@
                     </el-col>
                     <el-col :span=12  v-show='form.dbid'>
                         <el-form-item label='所在河流'>
-                            <el-cascader
-                                    size='small'
-                                    :show-all-levels="false"
-                                    :options="dam.rivers"
-                                    v-model='selectRiver'
-                                    :props="{value:'id',label:'name',children:'children'}"
-                            ></el-cascader>
+                            <!--<el-cascader-->
+                                    <!--size='small'-->
+                                    <!--:show-all-levels="false"-->
+                                    <!--:options="dam.rivers"-->
+                                    <!--v-model='selectRiver'-->
+                                    <!--:props="{value:'id',label:'name',children:'children'}"-->
+                            <!--&gt;</el-cascader>-->
+                            <itree v-model='form.riverid' :data='dam.rivers'></itree>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -331,6 +332,7 @@
     import login from '../components/login.vue';
     import cheader from '../components/header.vue';
     import pos from '../components/position.vue';
+    import itree from '../components/itree.vue';
 
     require('leaflet.markercluster/dist/MarkerCluster.Default.css');
 
@@ -393,7 +395,6 @@
                         {required:true,message:'请输入距离',trigger:'blur',type:'number'}
                     ]
                 },
-                selectRiver:[],
                 around_dialog:false,
                 around_form:{
                     lng:null,
@@ -549,7 +550,7 @@
                             text: '删除大坝',
                             index: 1,
                             callback:(e)=>{
-                                this.onDelDb(e.relatedTarget.options);
+                                this.onDelDb(e.relatedTarget.options,e);
                             }
                         }]
 
@@ -662,6 +663,13 @@
                     }
                 })
             },
+            delMarker(dbid){
+                this.markerLayers.eachLayer((layer)=>{
+                    if(layer.options.dbid == dbid){
+                       return this.markerLayers.removeLayer(layer);
+                    }
+                })
+            },
             onCloseRight(){
                 this.container.right = false;
                 this.rightSpan.list = [];
@@ -710,7 +718,7 @@
                 this.form.longitude = e.latlng.lng;
                 this.form.latitude = e.latlng.lat;
             },
-            onDelDb(options){
+            onDelDb(options,e){
                 let dbid = options.dbid;
                 let name = options.name;
                 if(dbid){
@@ -734,7 +742,7 @@
                                             this.areaLayers.removeLayer(layer);
                                         }
                                     })
-                                    this.init();
+                                   // this.init();
                              })
                         }
                     })
@@ -744,7 +752,6 @@
                 this.$refs.table.validate(valid=>{
                     if(valid){
                         layer.load(1);
-                        this.form.riverid = this.selectRiver[this.selectRiver.length-1];
                         setDbPosition(this.form).then(rep=>{
                             layer.closeAll();
                             this.dialog = false;
@@ -753,13 +760,15 @@
                                   type: 'success',
                                   message: '提交成功！'
                                 });
-
+                                this.delMarker(this.form.dbid);
+                                this.map.spin(true);
                                 getDma({dbid:this.form.dbid}).then(rep=>{
+                                    this.map.spin(false);
                                     let result = rep[0];
                                     this.list.push(result);
                                     this.dam.list.push(result);
                                     this.addMarker(result);
-                                    this.init();
+                                   // this.init();
                                 })
                             }
                         })
@@ -899,7 +908,8 @@
             login,
             search,
             cheader,
-            pos
+            pos,
+            itree
         },
         mounted() {
             this.$nextTick(()=>{
