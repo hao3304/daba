@@ -684,7 +684,7 @@
                 this.regionLayers.clearLayers();
                 region.forEach((r)=>{
                     if(r.Geometry){
-                        let polygon = new L.polygon(this._getGeo(r.Geometry),{fillColor:this.getRandomColor(),weight:2});
+                        let polygon = new L.polygon(this._getGeo(r.Geometry),{fillColor:r.Color||this.getRandomColor(),weight:2});
                         polygon.bindPopup(r.RegionName);
                         polygon.addTo(this.regionLayers);
                     }

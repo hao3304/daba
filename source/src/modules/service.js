@@ -27,7 +27,6 @@ export const setDbPosition = (params)=>co($.get(`${prefix}/GIS/addPosition/setDb
 export const delDam = (id)=>co($.get(`${prefix}/GIS/addPosition/delDam.jsp`,{dbid:id},'json'));
 export const doLogin = (p = {username:'',password:''})=>co($.getJSON(`${prefix}/GIS/loginOk.jsp?username=${p.username}&&password=${p.password}`));
 
-
 export const getPlaceNames = (params={})=>{
     if(params.regiontype){
         return co($.getJSON(`${prefix}/DataService.svc/PlaceNames`,{regiontype:'city',...params}));
@@ -36,8 +35,8 @@ export const getPlaceNames = (params={})=>{
     }
 };
 
-export const getCustomPlaceNames = ()=>co($.get('/DataService.svc/CustomPlaceNames'));
+export const getCustomPlaceNames = ()=>co($.get('/DamGIS/placename/placename!findCustomPlaceNames.action'));
 export const getRivers = ()=>co($.get('/GIS/searchDam/getRiverTree.jsp'));
 export const getRiverDam = (params)=>co($.get('/DataService.svc/RiverDam',params));
-export const queryByCustomNames = (params)=>co($.get('/DataService.svc/CustomPlaceNamesByCustomName',params));
-export const querySubRiverIDs = (params)=>co($.get('/DataService.svc/SubRiverIDs',params));
+export const queryByCustomNames = (params)=>co($.get('/DamGIS/placename/placename!findCustomPlaceNameListByCustomName.action',params));
+export const querySubRiverIDs = (params)=>co($.get('/DamGIS/river/river!findSubRivers.action',params));

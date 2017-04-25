@@ -90,18 +90,21 @@
                 this.loading2 = true;
                 getCustomPlaceNames().then((rep)=>{
                     this.loading2 = false;
-                    this.custom = this.transCustomData(rep);
+                    this.custom = this.transCustomData(rep.objInfo.dataList);
                 })
             },
             transCustomData(data){
-                return data.map((name)=>{
-                    return {RegionName:name,children:[],type:'big'};
+                return data.map((d)=>{
+                    return {RegionName:d.CUSTOMREGIONNAME,children:[],type:'big'};
                 })
             },
             loadCustom(node,resolve){
                 if(node.data.type =='big'){
-                    queryByCustomNames({customname:node.data.RegionName}).then((rep)=>{
-                        resolve(rep);
+                    queryByCustomNames({customName:node.data.RegionName}).then((rep)=>{
+                        let list = rep.objInfo.dataList;
+                        resolve(list.map(d=>{
+                            return {RegionName:d.REGIONNAME,Geometry:d.COORDS,Color:d.REGIONCOLOR,type:"custom"};
+                        }));
                     })
                 }else{
                     resolve([]);

@@ -15,7 +15,20 @@
     </div>
 </template>
 <style lang='less'>
-
+    .search-river{
+        .el-tree-node__content{
+            .fa-search{
+                display: none;
+                color:#0099cc;
+            }
+            &:hover{
+                .fa-search{
+                    display: inline;
+                    color: #2e8ded;
+                }
+            }
+        }
+    }
 </style>
 <script>
     import { getRiverDam, getRivers,querySubRiverIDs } from '../modules/service.js';
@@ -83,12 +96,12 @@
                this.rightSpan.list = [];
                this.container.right = false;
                 this._map.spin(true);
-               querySubRiverIDs({riverid:node.id}).then(rep=>{
+               querySubRiverIDs({riverId:node.id}).then(rep=>{
                     if(rep){
-                        let ll = rep.split(',');
+                        let ll = rep.objInfo.dataList.map(d=>String(d.RIVERID));
                         if(ll.length>0){
                              this.dam.list.forEach(d=>{
-                                if(ll.indexOf(d.dbid)>-1){
+                                if(ll.indexOf(d.riverid)>-1){
                                     list.push(d);
                                 }
                             });
@@ -107,11 +120,7 @@
             renderContent(h, { node, data, store }){
             var self = this;
              return h('span',{
-                on:{
-                    dblclick(){
-                        self.onNodeClick(data);
-                    }
-                }
+
              },[
                 h('span',{},[
                     h('span',{
@@ -120,6 +129,18 @@
                         },
                         style: {
                             fontSize:'14px'
+                        }
+                    }),
+                    h('i',{
+                       class:{
+                        'fa':true,
+                        'fa-search':true
+                       },
+                       on:{
+                            click(e){
+                                e.stopPropagation();
+                                self.onNodeClick(data);
+                            }
                         }
                     })
                 ])
