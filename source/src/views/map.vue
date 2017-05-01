@@ -118,11 +118,11 @@
                     <el-col :span=12  v-show='form.dbid'>
                         <el-form-item label='所在河流'>
                             <!--<el-cascader-->
-                                    <!--size='small'-->
-                                    <!--:show-all-levels="false"-->
-                                    <!--:options="dam.rivers"-->
-                                    <!--v-model='selectRiver'-->
-                                    <!--:props="{value:'id',label:'name',children:'children'}"-->
+                            <!--size='small'-->
+                            <!--:show-all-levels="false"-->
+                            <!--:options="dam.rivers"-->
+                            <!--v-model='selectRiver'-->
+                            <!--:props="{value:'id',label:'name',children:'children'}"-->
                             <!--&gt;</el-cascader>-->
                             <itree v-model='form.riverid' :data='dam.rivers'></itree>
                         </el-form-item>
@@ -149,9 +149,9 @@
                         </el-form-item>
                     </el-col>
                     <!--<el-col :span=12 >-->
-                        <!--<el-form-item label='大坝长度'>-->
-                            <!--<el-input size='small' type='number' placeholder="请输入大坝长度" v-model='form.length' ></el-input>-->
-                        <!--</el-form-item>-->
+                    <!--<el-form-item label='大坝长度'>-->
+                    <!--<el-input size='small' type='number' placeholder="请输入大坝长度" v-model='form.length' ></el-input>-->
+                    <!--</el-form-item>-->
                     <!--</el-col>-->
                 </el-row>
                 <el-row v-show='form.dbid'>
@@ -215,9 +215,9 @@
     }
 
     .marker-hover{
-       img{
-           transform: scale(1) !important;
-       }
+        img{
+            transform: scale(1) !important;
+        }
     }
     .custom-form{
         .el-form-item{
@@ -860,6 +860,7 @@
                 this.currentPage = p;
             },
             onRegionCheck(checked) {
+                this.regionCheck = true;
                 this.map.spin(true);
                 setTimeout(()=>{
                      this.riverRegionLayers.clearLayers();
@@ -887,14 +888,18 @@
                 },100)
             },
             onCloseRiverRegion() {
-                this.map.spin(true);
-                this.normal.addTo(this.map);
+                this.onCloseLeft();
+                if(this.regionCheck) {
+                    this.map.spin(true);
+                    this.normal.addTo(this.map);
 
-                setTimeout(()=>{
-                    this.riverRegionLayers.clearLayers();
-                    this.renderMarkers(this.dam.list);
-                },100)
+                    setTimeout(()=>{
+                        this.riverRegionLayers.clearLayers();
+                        this.renderMarkers(this.dam.list);
+                    },100)
+                }
             }
+
         },
         watch:{
             container:{
