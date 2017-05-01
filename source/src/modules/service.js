@@ -40,3 +40,5 @@ export const getRivers = ()=>co($.get('/GIS/searchDam/getRiverTree.jsp'));
 export const getRiverDam = (params)=>co($.get('/DataService.svc/RiverDam',params));
 export const queryByCustomNames = (params)=>co($.get('/DamGIS/placename/placename!findCustomPlaceNameListByCustomName.action',params));
 export const querySubRiverIDs = (params)=>co($.get('/DamGIS/river/river!findSubRivers.action',params));
+
+export const getRegion = ()=>co($.get('http://183.247.147.228:8006/geoserver/nyc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=nyc:region_dam&maxFeatures=50&outputFormat=JSON'));

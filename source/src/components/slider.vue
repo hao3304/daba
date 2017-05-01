@@ -105,7 +105,7 @@
 </style>
 <script>
     export default{
-        store:['container','container'],
+        store:['container'],
         props:{
             name:''
         },
@@ -188,6 +188,12 @@
                             url:'river',
                         }
                     ]
+                },{
+                    id:'3',
+                    name:'流域查询',
+                    icon:'fa fa-bandcamp',
+                    url:'river-region',
+                    children:[]
                 },{
                     id:'3',
                     name:'工具栏',

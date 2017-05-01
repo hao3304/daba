@@ -5,6 +5,7 @@
             <search-company @close='onCloseLeft' @node-click='flyTo' v-show='container.left =="company"'></search-company>
             <search-river @close='onCloseLeft' v-show='container.left =="river"'></search-river>
             <search-region @close='onCloseLeft' @select='onRegionSelect' v-show='container.left =="region"'></search-region>
+            <river-region @close='onCloseRiverRegion' @check='onRegionCheck' v-if='container.left =="river-region"'></river-region>
             <toolbar @toolbar-click="onToolbarClick" @close='onCloseLeft' v-show='container.left =="tool"' class='toolbar'></toolbar>
         </el-col>
         <el-col :span="center_span" class='main-wrap' style="height: 100%;position:relative">
@@ -328,11 +329,13 @@
     import searchCompany from '../components/searchCompany.vue';
     import searchRegion from '../components/searchRegion.vue';
     import searchRiver from '../components/searchRiver.vue';
+    import riverRegion from '../components/searchRiverRegion.vue';
     import search from '../components/search.vue';
     import login from '../components/login.vue';
     import cheader from '../components/header.vue';
     import pos from '../components/position.vue';
     import itree from '../components/itree.vue';
+    import pip from '@mapbox/leaflet-pip';
 
     require('leaflet.markercluster/dist/MarkerCluster.Default.css');
 
@@ -505,6 +508,17 @@
                 this.markerLayers = new L.featureGroup().addTo(this.map);
                 this.measureLayers = new L.featureGroup().addTo(this.map);
                 this.regionLayers = new L.featureGroup().addTo(this.map);
+
+                //流域图层
+                let self = this;
+                this.riverRegionLayers = new L.geoJson([],{
+                    onEachFeature: function (feature, layer) {
+                        layer.bindPopup(feature.properties.name);
+                    },
+                      style: function (feature) {
+                        return {color: self.getRandomColor()};
+                    },
+                }).addTo(this.map);
                 //大坝区域
                 this.areaLayers = new L.featureGroup();
                 this.map.on('zoomend',(m)=>{
@@ -844,6 +858,42 @@
             },
             onCurrentChange(p) {
                 this.currentPage = p;
+            },
+            onRegionCheck(checked) {
+                this.map.spin(true);
+                setTimeout(()=>{
+                     this.riverRegionLayers.clearLayers();
+                if(checked.length>0) {
+                    checked.forEach(c=>{
+                        this.riverRegionLayers.addData(c);
+                    })
+                    this.map.fitBounds(this.riverRegionLayers.getBounds());
+                    this.map.removeLayer(this.normal);
+                    this.map.removeLayer(this.earth);
+
+                    let markers = this.dam.list.filter(l=>{
+                         if(l.longitude&&l.latitude) {
+                            let b = pip.pointInLayer([parseFloat(l.longitude),parseFloat(l.latitude)],this.riverRegionLayers);
+                            return b.length>0
+                         }else{
+                            return false
+                         }
+                    })
+
+                    this.renderMarkers(markers);
+                }else{
+                    this.renderMarkers([]);
+                }
+                },100)
+            },
+            onCloseRiverRegion() {
+                this.map.spin(true);
+                this.normal.addTo(this.map);
+
+                setTimeout(()=>{
+                    this.riverRegionLayers.clearLayers();
+                    this.renderMarkers(this.dam.list);
+                },100)
             }
         },
         watch:{
@@ -852,6 +902,11 @@
                handler(){
                  this.$nextTick(()=>this.map.invalidateSize());
                }
+            },
+            'container.left'(a,b){
+                if(b == 'river-region'){
+                    this.onCloseRiverRegion();
+                }
             },
             search(v){
                 this.flyTo(v);
@@ -909,7 +964,8 @@
             search,
             cheader,
             pos,
-            itree
+            itree,
+            riverRegion
         },
         mounted() {
             this.$nextTick(()=>{
