@@ -6,6 +6,7 @@ const Vue = require('vue/dist/vue.min.js');
 const UI = require('element-ui');
 const Router = require('vue-router');
 import VueLocalStorage from 'vue-ls';
+require('es6-promise').polyfill();
 
 let options = {
     namespace: 'vuejs__'

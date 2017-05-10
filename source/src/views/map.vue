@@ -363,7 +363,7 @@
         data() {
             return {
                 height: document.documentElement.clientHeight - 40,
-                zoom:4,
+                zoom:14,
                 center:[38,115],
                 minZoom:2,
                 tooltip:false,
@@ -511,6 +511,7 @@
 
                 //流域图层
                 let self = this;
+                this.riverLayers = new L.featureGroup().addTo(this.map);
                 this.riverRegionLayers = new L.geoJson([],{
                     onEachFeature: function (feature, layer) {
                         layer.bindPopup(feature.properties.name);
@@ -860,11 +861,34 @@
                 this.currentPage = p;
             },
             onRegionCheck(checked) {
+
                 this.regionCheck = true;
                 this.map.spin(true);
                 setTimeout(()=>{
                      this.riverRegionLayers.clearLayers();
+
+                    if(this.wmsLayer) {
+                        this.map.removeLayer(this.wmsLayer)
+                        this.wmsLayer = null
+                    }
+
                 if(checked.length>0) {
+
+                    let filters = checked.map(c=>{
+                        return 'RegionID=' + c.properties.id
+                    })
+
+                    let layers = checked.map(c=>{
+                        return 'nyc:river_dam'
+                    })
+
+                     this.wmsLayer = L.tileLayer.wms(`http://183.247.147.228:8006/geoserver/nyc/wms?CQL_FILTER=${filters.join(';')}&`, {
+                        layers:layers.join(','),
+                        crs:L.CRS.EPSG4326,
+                        format:'image/png'
+                    }).addTo(this.map);
+
+
                     checked.forEach(c=>{
                         this.riverRegionLayers.addData(c);
                     })

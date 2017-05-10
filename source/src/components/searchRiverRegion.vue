@@ -4,7 +4,7 @@
             <span class='title'>流域管理</span>
             <el-button style='float:right;color:#20a0ff;margin-top:2px;' @click='onClose' type="text" icon='circle-close'></el-button>
         </div>
-        <div  class='search-region' >
+        <div  class='search-region' style="background-color:#efefef">
                 <div v-loading.body='loading' v-show='loading' style="height:200px;"></div>
             <el-checkbox-group v-model="checkList">
                 <div v-for='l in list' style="line-height:28px;padding:0 10px;">
