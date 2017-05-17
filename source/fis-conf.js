@@ -9,6 +9,7 @@ fis.hook('commonjs', {
     extList: ['.js', '.jsx', '.es', '.ts', '.vue']
 });
 
+
 fis.match('/{node_modules,src}/**.js',{
     isMod:true,
     useSameNameRequire:true

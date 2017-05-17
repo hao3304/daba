@@ -1,9 +1,10 @@
 <template>
     <el-row style="height: 100%" :class="{'show-tip':tooltip&&zoom>=8,'small-icon':zoom<8&&zoom>6,'mini-icon':zoom<=6}"  >
         <el-col :span='5' class='main-wrap' v-show='container.left'  >
+            <emergency @click='onEmergencyClick' @close='onCloseLeft' v-if='container.left == "emergency"' ></emergency>
             <search-form @close='onCloseLeft' v-show='container.left =="search"'></search-form>
             <search-company @close='onCloseLeft' @node-click='flyTo' v-show='container.left =="company"'></search-company>
-            <search-river @close='onCloseLeft' v-show='container.left =="river"'></search-river>
+            <search-river @close='onCloseLeft' v-if='container.left =="river"'></search-river>
             <search-region @close='onCloseLeft' @select='onRegionSelect' v-show='container.left =="region"'></search-region>
             <river-region @close='onCloseRiverRegion' @check='onRegionCheck' v-if='container.left =="river-region"'></river-region>
             <toolbar @toolbar-click="onToolbarClick" @close='onCloseLeft' v-show='container.left =="tool"' class='toolbar'></toolbar>
@@ -79,7 +80,7 @@
             <div style="text-align:center;">
                 <el-pagination
                         small
-                        page-size='50'
+                        :page-size.number=50
                         :current-page='currentPage'
                         layout="prev, pager, next"
                         @current-change='onCurrentChange'
@@ -336,6 +337,7 @@
     import pos from '../components/position.vue';
     import itree from '../components/itree.vue';
     import pip from '@mapbox/leaflet-pip';
+    import emergency from '../components/emergency.vue';
 
     require('leaflet.markercluster/dist/MarkerCluster.Default.css');
 
@@ -363,7 +365,7 @@
         data() {
             return {
                 height: document.documentElement.clientHeight - 40,
-                zoom:14,
+                zoom:4,
                 center:[38,115],
                 minZoom:2,
                 tooltip:false,
@@ -690,6 +692,7 @@
                 this.rightSpan.list = [];
             },
             onCloseLeft(){
+                this.regionLayers.clearLayers();
                 this.container.left = false;
             },
             filterTag(value,row){
@@ -922,8 +925,15 @@
                         this.renderMarkers(this.dam.list);
                     },100)
                 }
+            },
+            onEmergencyClick(type,data) {
+                this.regionLayers.clearLayers();
+                if(type == '地震') {
+                    let circle = L.circle([data.lat,data.lng], {radius: Math.ceil(data.level)*1000}).addTo(this.regionLayers);
+                    circle.bindTooltip(`${data.time}</br>${data.addr}</br>深度：${data.deep}；级别：${data.level}`,{permanent:true})
+                    this.map.fitBounds(this.regionLayers.getBounds())
+                }
             }
-
         },
         watch:{
             container:{
@@ -994,7 +1004,8 @@
             cheader,
             pos,
             itree,
-            riverRegion
+            riverRegion,
+            emergency
         },
         mounted() {
             this.$nextTick(()=>{

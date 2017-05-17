@@ -8,7 +8,7 @@
                     <!--size='small' placeholder='请输入河流流域名称' v-model='query' style='width:80%;' ></el-input>-->
             <el-button style='float:right;color:#20a0ff;margin-top:2px;' @click='onClose' type="text" icon='circle-close'></el-button>
         </div>
-        <div  class='search-river'>
+        <div  class='search-river' v-loading.body='loading'>
             <el-tree :render-content="renderContent" :data='filterData'  highlight-current accordion   :props="props" >
             </el-tree>
         </div>
@@ -32,7 +32,6 @@
 </style>
 <script>
     import { getRiverDam, getRivers,querySubRiverIDs } from '../modules/service.js';
-    import Vue from 'vue/dist/vue.js';
 
     export default{
         store:['container','rightSpan','dam','_map'],
@@ -43,7 +42,8 @@
                 label: 'name',
                 children: 'children'
                 },
-                query:''
+                query:'',
+                loading:true
             }
         },
         computed:{
@@ -62,6 +62,9 @@
                 getRivers().then((rep)=>{
                     this.treeData = this.transData(JSON.parse(rep));
                     this.dam.rivers = this.treeData;
+                    if(this.loading) {
+                        this.loading = false;
+                    }
                 })
             },
             transData(data) {

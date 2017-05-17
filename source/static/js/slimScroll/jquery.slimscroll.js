@@ -9,7 +9,6 @@
 
   $.fn.extend({
     slimScroll: function(options) {
-
       var defaults = {
 
         // width in pixels of the visible scroll area
@@ -22,7 +21,7 @@
         size : '7px',
 
         // scrollbar color, accepts any hex/color value
-        color: '#000',
+        color: '#fff',
 
         // scrollbar position - left/right
         position : 'right',

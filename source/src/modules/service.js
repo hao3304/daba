@@ -26,6 +26,8 @@ export const getDbList = ()=>co($.get(`${prefix}/GIS/addPosition/getDbList.jsp?i
 export const setDbPosition = (params)=>co($.get(`${prefix}/GIS/addPosition/setDbPosition.jsp`,params,'json'));
 export const delDam = (id)=>co($.get(`${prefix}/GIS/addPosition/delDam.jsp`,{dbid:id},'json'));
 export const doLogin = (p = {username:'',password:''})=>co($.getJSON(`${prefix}/GIS/loginOk.jsp?username=${p.username}&&password=${p.password}`));
+export const getEmergency = (params)=>co($.get(`${prefix}/GIS/emergencySupport/getAccidentList.jsp`,params));
+export const getAccidentInfo = (params)=>co($.get(`${prefix}/GIS/emergencySupport/getAccidentInfo.jsp`,params));
 
 export const getPlaceNames = (params={})=>{
     if(params.regiontype){

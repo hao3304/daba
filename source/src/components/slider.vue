@@ -3,19 +3,19 @@
         <div class='collapse-side' v-show='collapse'>
             <ul>
                 <li v-for='(n,$index) in navs'  class='parent-menu' :class='{"is-opened":index === $index}'>
+                <el-tooltip v-if='n.children.length == 0' class="item" effect="dark" :content="n.name" placement="right">
                     <a href='javascript:;' @click='onSelect(n.url)'><i :class='n.icon'></i></a>
+                </el-tooltip>
+                <a v-else href='javascript:;' @click='onSelect(n.url)'><i :class='n.icon'></i></a>
                     <ul class='children-menu' v-if='n.children.length>0'>
                         <li class='children-menu-header'>
-                            <el-tooltip class="item" effect="dark" content="Right Center 提示文字" placement="right">
                                 <a>{{n.name}} <i class="el-submenu__icon-arrow el-icon-arrow-right"></i></a>
-                            </el-tooltip>
                         </li>
                         <li v-for='c in n.children' :class="{'active':active==c.url}">
                             <a href='javascript:;' @click.stop='onSelect(c.url,$event)'> <i :class='c.icon'></i>&nbsp;&nbsp;{{c.name}}</a>
                         </li>
                     </ul>
                 </li>
-
             </ul>
         </div>
 
@@ -190,10 +190,22 @@
                     ]
                 },{
                     id:'3',
-                    name:'流域查询',
-                    icon:'fa fa-bandcamp',
-                    url:'river-region',
-                    children:[]
+                    name:'综合分析',
+                    icon:'fa fa-pie-chart',
+                    children:[
+                        {
+                            id:'3-1',
+                            name:'流域分布',
+                           icon:'fa fa-bandcamp',
+                            url:'river-region'
+                        },
+                        {
+                            id:'3-2',
+                            name:'应急管理',
+                            icon:'fa fa-ambulance',
+                            url:'emergency'
+                        }
+                    ]
                 },{
                     id:'3',
                     name:'工具栏',

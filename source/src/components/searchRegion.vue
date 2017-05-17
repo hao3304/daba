@@ -50,7 +50,6 @@
 </style>
 <script>
     import {getDma,getPlaceNames,getCustomPlaceNames,queryByCustomNames} from '../modules/service.js';
-    import Vue from 'vue/dist/vue.js';
 
     export default{
         store:['container','rightSpan'],

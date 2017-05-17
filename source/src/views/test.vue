@@ -1,7 +1,8 @@
 <template>
     <div>
-        <itree v-model='msg' :data='tree'></itree>
-        {{msg}}
+        <el-tooltip class="item" effect="dark" content="Left Bottom 提示文字" placement="left-end">
+            <el-button>左下</el-button>
+        </el-tooltip>
     </div>
 </template>
 <style>

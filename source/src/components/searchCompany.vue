@@ -18,7 +18,6 @@
 </style>
 <script>
     import {getDma,getZGDWList} from '../modules/service.js';
-    import Vue from 'vue/dist/vue.js';
 
     export default{
         store:['container','rightSpan'],
