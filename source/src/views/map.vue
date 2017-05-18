@@ -2,6 +2,7 @@
     <el-row style="height: 100%" :class="{'show-tip':tooltip&&zoom>=8,'small-icon':zoom<8&&zoom>6,'mini-icon':zoom<=6}"  >
         <el-col :span='5' class='main-wrap' v-show='container.left'  >
             <emergency @click='onEmergencyClick' @close='onCloseLeft' v-if='container.left == "emergency"' ></emergency>
+            <rain  @close='onCloseLeft' @search='onSearchRainFall' v-if='container.left == "rainfall"' ></rain>
             <search-form @close='onCloseLeft' v-show='container.left =="search"'></search-form>
             <search-company @close='onCloseLeft' @node-click='flyTo' v-show='container.left =="company"'></search-company>
             <search-river @close='onCloseLeft' v-if='container.left =="river"'></search-river>
@@ -338,6 +339,7 @@
     import itree from '../components/itree.vue';
     import pip from '@mapbox/leaflet-pip';
     import emergency from '../components/emergency.vue';
+    import rain from '../components/rain.vue';
 
     require('leaflet.markercluster/dist/MarkerCluster.Default.css');
 
@@ -933,6 +935,20 @@
                     circle.bindTooltip(`${data.time}</br>${data.addr}</br>深度：${data.deep}；级别：${data.level}`,{permanent:true})
                     this.map.fitBounds(this.regionLayers.getBounds())
                 }
+            },
+            onSearchRainFall(data) {
+                this.regionLayers.clearLayers();
+                data.forEach(d=>{
+                    new L.polygon(d.area,{
+                    fillColor:d.color,
+                    weight:1,
+                    fillOpacity:.9,
+                    }).addTo(this.regionLayers);
+                })
+
+                if(data.length>0){
+                this.map.fitBounds(this.regionLayers.getBounds())
+                }
             }
         },
         watch:{
@@ -1005,7 +1021,8 @@
             pos,
             itree,
             riverRegion,
-            emergency
+            emergency,
+            rain
         },
         mounted() {
             this.$nextTick(()=>{

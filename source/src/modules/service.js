@@ -28,6 +28,7 @@ export const delDam = (id)=>co($.get(`${prefix}/GIS/addPosition/delDam.jsp`,{dbi
 export const doLogin = (p = {username:'',password:''})=>co($.getJSON(`${prefix}/GIS/loginOk.jsp?username=${p.username}&&password=${p.password}`));
 export const getEmergency = (params)=>co($.get(`${prefix}/GIS/emergencySupport/getAccidentList.jsp`,params));
 export const getAccidentInfo = (params)=>co($.get(`${prefix}/GIS/emergencySupport/getAccidentInfo.jsp`,params));
+export const getAnalyseResult = (params)=>co($.get(`${prefix}/GIS/rainPicture/getAnalyseResult.jsp`,params));
 
 export const getPlaceNames = (params={})=>{
     if(params.regiontype){
@@ -43,6 +44,6 @@ export const getRiverDam = (params)=>co($.get('/DataService.svc/RiverDam',params
 export const queryByCustomNames = (params)=>co($.get('/DamGIS/placename/placename!findCustomPlaceNameListByCustomName.action',params));
 export const querySubRiverIDs = (params)=>co($.get('/DamGIS/river/river!findSubRivers.action',params));
 
-export const getRegion = ()=>co($.get('http://183.247.147.228:8006/geoserver/nyc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=nyc:region_dam&maxFeatures=50&outputFormat=JSON'));
-export const getRiver = (layers,id)=>co($.get(`http://183.247.147.228:8006/geoserver/nyc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=nyc:river_dam&maxFeatures=99&CQL_FILTER=RegionID=${id}&outputFormat=JSON`));
+export const getRegion = ()=>co($.get('http://api.rsafety.com.cn:8006/geoserver/nyc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=nyc:region_dam&maxFeatures=50&outputFormat=JSON'));
+export const getRiver = (layers,id)=>co($.get(`http://api.rsafety.com.cn:8006/geoserver/nyc/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=nyc:river_dam&maxFeatures=99&CQL_FILTER=RegionID=${id}&outputFormat=JSON`));
 

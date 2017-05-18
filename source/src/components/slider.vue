@@ -204,6 +204,12 @@
                             name:'应急管理',
                             icon:'fa fa-ambulance',
                             url:'emergency'
+                        },
+                        {
+                            id:'3-3',
+                            name:'降雨量分析',
+                            icon:'fa fa-tint',
+                            url:'rainfall'
                         }
                     ]
                 },{
