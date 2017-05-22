@@ -9,20 +9,26 @@
             <el-button style='float:right;color:#20a0ff;margin-top:2px;' @click='onClose' type="text" icon='circle-close'></el-button>
         </div>
         <div  class='search-river' v-loading.body='loading'>
-            <el-tree :render-content="renderContent" :data='filterData'  highlight-current accordion   :props="props" >
+            <el-tree style='width:100%' :render-content="renderContent" :data='filterData'  highlight-current accordion   :props="props" >
             </el-tree>
         </div>
+
+        <el-dialog size='large' top='5%' :visible='dialog' :before-close='onCloseDialog' :title='title' style='text-align:center;'>
+            <iframe v-if='dialog' style="border:none;height:420px;width:100%;" :src="'/profile.html?ids='+ids"></iframe>
+        </el-dialog>
     </div>
 </template>
 <style lang='less'>
     .search-river{
+        overflow-x:auto;
         .el-tree-node__content{
-            .fa-search{
+            .fa-search,.fa-bar-chart{
                 display: none;
                 color:#0099cc;
+                margin:0 3px;
             }
             &:hover{
-                .fa-search{
+                .fa-search,.fa-bar-chart{
                     display: inline;
                     color: #2e8ded;
                 }
@@ -43,7 +49,10 @@
                 children: 'children'
                 },
                 query:'',
-                loading:true
+                loading:true,
+                dialog:false,
+                ids:'',
+                title:''
             }
         },
         computed:{
@@ -57,6 +66,9 @@
         methods:{
             onClose(){
                 this.$emit('close');
+            },
+            onCloseDialog() {
+                this.dialog = false;
             },
             render(){
                 getRivers().then((rep)=>{
@@ -94,7 +106,7 @@
                    }
                    return list;
             },
-            onNodeClick(node){
+            onNodeClick(node,type){
                let list = [];
                this.rightSpan.list = [];
                this.container.right = false;
@@ -110,14 +122,27 @@
                             });
 
                              if(list.length>0){
-                                this.rightSpan.list = list;
-                                this.rightSpan.name = node.RiverName;
-                                this.container.right = true;
+
+                                if(type == 'section') {
+                                    this.ids = list.map(l=>l.dbid).join(',');
+                                    this.title = node.name;
+                                    this.dialog = true;
+
+                                }else{
+                                        this.rightSpan.list = list;
+                                        this.rightSpan.name = node.RiverName;
+                                        this.container.right = true;
+                                }
+
+
                             }
                         }
                     }
                     this._map.spin(false);
                })
+            },
+            showSection(data) {
+                debugger
             },
             onIconClick(){this.query =''},
             renderContent(h, { node, data, store }){
@@ -143,6 +168,18 @@
                             click(e){
                                 e.stopPropagation();
                                 self.onNodeClick(data);
+                            }
+                        }
+                    }),
+                    h('i',{
+                       class:{
+                        'fa':true,
+                        'fa-bar-chart':true
+                       },
+                       on:{
+                            click(e){
+                                e.stopPropagation();
+                                self.onNodeClick(data,'section');
                             }
                         }
                     })

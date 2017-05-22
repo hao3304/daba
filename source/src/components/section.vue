@@ -23,7 +23,7 @@
             </div>
         </div>
 
-        <el-dialog size='large' :visible='dialog' :before-close='onCloseDialog' :title='title' style='text-align:center;'>
+        <el-dialog size='large' top='5%' :visible='dialog' :before-close='onCloseDialog' :title='title' style='text-align:center;'>
             <iframe v-if='dialog' style="border:none;height:420px;width:100%;" :src="'/profile.html?ids='+ids"></iframe>
         </el-dialog>
         <el-dialog size='large' top='5%' :visible='sectionDialog' :before-close='onCloseDialog' :title='dialogTitle' >

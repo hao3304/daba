@@ -31,7 +31,9 @@ export const getAccidentInfo = (params)=>co($.get(`${prefix}/GIS/emergencySuppor
 export const getAnalyseResult = (params)=>co($.get(`${prefix}/GIS/rainPicture/getAnalyseResult.jsp`,params));
 export const getThemeList = (params = {})=>co($.get(`${prefix}/GIS/thematicMap/getList.jsp`,params));
 export const addTheme = (params = {})=>co($.get(`${prefix}/GIS/thematicMap/add.jsp`,params));
+export const deleteTheme = (params = {})=>co($.get(`${prefix}/GIS/thematicMap/del.jsp`,params));
 export const addIsosurface = (params = {})=>co($.get(`${prefix}/GIS/thematicMap/addIsosurface.jsp`,params));
+export const getIsosurface = (params = {})=>co($.get(`${prefix}/GIS/thematicMap/getIsosurface.jsp`,params));
 export const addSection = (params = {})=>co($.get(`${prefix}/GIS/basin/addSection.jsp`,params));
 export const getSectionList = (params = {})=>co($.get(`${prefix}/GIS/basin/getSectionList.jsp`,params));
 export const updateSection = (params = {})=>co($.get(`${prefix}/GIS/basin/updateSection.jsp`,params));
