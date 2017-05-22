@@ -29,6 +29,13 @@ export const doLogin = (p = {username:'',password:''})=>co($.getJSON(`${prefix}/
 export const getEmergency = (params)=>co($.get(`${prefix}/GIS/emergencySupport/getAccidentList.jsp`,params));
 export const getAccidentInfo = (params)=>co($.get(`${prefix}/GIS/emergencySupport/getAccidentInfo.jsp`,params));
 export const getAnalyseResult = (params)=>co($.get(`${prefix}/GIS/rainPicture/getAnalyseResult.jsp`,params));
+export const getThemeList = (params = {})=>co($.get(`${prefix}/GIS/thematicMap/getList.jsp`,params));
+export const addTheme = (params = {})=>co($.get(`${prefix}/GIS/thematicMap/add.jsp`,params));
+export const addIsosurface = (params = {})=>co($.get(`${prefix}/GIS/thematicMap/addIsosurface.jsp`,params));
+export const addSection = (params = {})=>co($.get(`${prefix}/GIS/basin/addSection.jsp`,params));
+export const getSectionList = (params = {})=>co($.get(`${prefix}/GIS/basin/getSectionList.jsp`,params));
+export const updateSection = (params = {})=>co($.get(`${prefix}/GIS/basin/updateSection.jsp`,params));
+export const deleteSection = (params = {})=>co($.get(`${prefix}/GIS/basin/deleteSection.jsp`,params));
 
 export const getPlaceNames = (params={})=>{
     if(params.regiontype){

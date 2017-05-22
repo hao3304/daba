@@ -207,9 +207,21 @@
                         },
                         {
                             id:'3-3',
-                            name:'降雨量分析',
+                            name:'降雨分析',
                             icon:'fa fa-tint',
                             url:'rainfall'
+                        },
+                        {
+                            id:'3-4',
+                            name:'专题分析',
+                            icon:'fa fa-photo',
+                            url:'theme'
+                        },
+                        {
+                            id:'3-4',
+                            name:'自定义剖面',
+                            icon:'fa fa-bar-chart',
+                            url:'section'
                         }
                     ]
                 },{

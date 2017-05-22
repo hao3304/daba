@@ -1,0 +1,627 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>大坝剖面图</title>
+    <style>
+        #highcharts-0{
+            display: inline-block;
+            width:650px !important;
+        }
+    </style>
+</head>
+<body>
+  <div id='container' style="text-align: center;" >
+	</div>
+</body>
+</html>
+<script src="/static/js/jquery.js"></script>
+<script src="/static/js/underscore.js"></script>
+<script src="/static/js/highcharts.js"></script>
+<script>
+
+
+    function GetQueryString(name)
+    {
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)return  unescape(r[2]); return null;
+    }
+
+    var ids = GetQueryString('ids');
+    ids = ids.split(',');
+//    var _Dams = [{"angle":"70","area":"106.153988455633 26.8539938918606,106.155065820162 26.8569539265762,106.155911544367 26.8566461081394,106.154834179838 26.8536860734238,106.153988455633 26.8539938918606","bgColor":"#7F0000FF","borderColor":"#FF0000FF","capacity":"695","city":"贵阳市","constructState":"已建","damType":"混凝土拱坝","dbid":"274","dbmc":"东风","domination":"电力","height":"162.00","iconHeight":"26","iconPath":"http://www.dam.com.cn/images/icon/注册[电].png","iconPosition":"GISIconInfo","iconWidth":"26","isGisConfirm":"已核","kind":"注册[电]","latitude":"26.85532","longitude":"106.15495","normalWaterLevel":"970.00","productionTime":"1994-04","province":"贵州省","riverid":"2995","ssgs":"华电集团","storage":"10.25","topLevel":"978.00","zgdw":""},{"angle":"30","area":"106.374029291886 26.9697681870465,106.370883605706 26.9699330454735,106.370930708114 26.9708318129535,106.374076394294 26.9706669545265,106.374029291886 26.9697681870465","bgColor":"#7F0000FF","borderColor":"#FF0000FF","capacity":"600","city":"毕节市","constructState":"已建","damType":"碾压混凝土重力坝","dbid":"506","dbmc":"索风营","domination":"电力","height":"115.80","iconHeight":"26","iconPath":"http://www.dam.com.cn/images/icon/注册[电].png","iconPosition":"GISIconInfo","iconWidth":"26","isGisConfirm":"已核","kind":"注册[电]","latitude":"26.9703","longitude":"106.37248","normalWaterLevel":"837.00","productionTime":"2005-06","province":"贵州省","riverid":"2995","ssgs":"华电集团","storage":"2.01","topLevel":"843.95","zgdw":""},{"angle":"105","area":"106.76026769254 27.318465133989,106.761082973347 27.3215078033845,106.76195230746 27.321274866011,106.761137026653 27.3182321966155,106.76026769254 27.318465133989","bgColor":"#7F0000FF","borderColor":"#FF0000FF","capacity":"1250","city":"遵义市","constructState":"已建","damType":"混凝土拱形重力坝","dbid":"255","dbmc":"乌江渡","domination":"电力","height":"165.00","iconHeight":"26","iconPath":"http://www.dam.com.cn/images/icon/注册[电].png","iconPosition":"GISIconInfo","iconWidth":"26","isGisConfirm":"已核","kind":"注册[电]","latitude":"27.31987","longitude":"106.76111","normalWaterLevel":"760.00","productionTime":"1979-11","province":"贵州省","riverid":"2995","ssgs":"华电集团","storage":"23","topLevel":"765.00","zgdw":""},{"angle":"120","area":"107.632492787391 27.3739310088501,107.634067788966 27.3766589916,107.634847212609 27.37620899115,107.633272211034 27.3734810084,107.632492787391 27.3739310088501","bgColor":"#7F0000FF","borderColor":"#FF0000FF","capacity":"3000","city":"遵义市","constructState":"已建","damType":"混凝土拱坝","dbid":"643","dbmc":"构皮滩","domination":"电力","height":"230.50","iconHeight":"26","iconPath":"http://www.dam.com.cn/images/icon/注册[电].png","iconPosition":"GISIconInfo","iconWidth":"26","isGisConfirm":"已核","kind":"注册[电]","latitude":"27.37507","longitude":"107.63367","normalWaterLevel":"630.00","productionTime":"2008-11","province":"贵州省","riverid":"2995","ssgs":"华电集团","storage":"64.51","topLevel":"640.50","zgdw":""},{"angle":"120","area":"108.193040288179 27.7971329494174,108.195040288179 27.8005970510326,108.195819711821 27.8001470505826,108.193819711821 27.7966829489674,108.193040288179 27.7971329494174","bgColor":"#FF030EFF","borderColor":"#FF090EFD","capacity":"1050","city":"","constructState":"已建","damType":"碾压混凝土拱坝","dbid":"667","dbmc":"思林","domination":"电力","height":"117.00","iconHeight":"26","iconPath":"http://www.dam.com.cn/images/icon/已建[电].png","iconPosition":"GISIconInfo","iconWidth":"26","isGisConfirm":"已核","kind":"已建[电]","latitude":"27.79864","longitude":"108.19443","normalWaterLevel":"440.00","productionTime":"","province":"贵州","riverid":"2995","ssgs":"华电集团","storage":"15.93","topLevel":"452.00","zgdw":""},{"angle":"47","area":"108.472875886405 28.493944716177,108.469465894605 28.4976014846851,108.470124113595 28.498215283823,108.473534105395 28.4945585153149,108.472875886405 28.493944716177","bgColor":"#FF030EFF","borderColor":"#FF090EFD","capacity":"1120","city":"","constructState":"已建","damType":"碾压混凝土重力坝","dbid":"790","dbmc":"沙沱","domination":"电力","height":"101.00","iconHeight":"26","iconPath":"http://www.dam.com.cn/images/icon/备案[电].png","iconPosition":"GISIconInfo","iconWidth":"26","isGisConfirm":"已核","kind":"备案[电]","latitude":"28.49608","longitude":"108.4715","normalWaterLevel":"365.00","productionTime":"2013-04","province":"贵州省","riverid":"2995","ssgs":"华电集团","storage":"9.21","topLevel":"371.00","zgdw":""},{"angle":"130","area":"108.196162888158 29.1997927335092,108.198187671154 29.202205775918,108.198877111842 29.2016272664908,108.196852328846 29.199214224082,108.196162888158 29.1997927335092","bgColor":"#7F0000FF","borderColor":"#FF0000FF","capacity":"1750","city":"","constructState":"已建","damType":"混凝土重力坝","dbid":"498","dbmc":"彭水","domination":"电力","height":"113.50","iconHeight":"26","iconPath":"http://www.dam.com.cn/images/icon/注册[电].png","iconPosition":"GISIconInfo","iconWidth":"26","isGisConfirm":"已核","kind":"注册[电]","latitude":"29.20071","longitude":"108.19752","normalWaterLevel":"293.00","productionTime":"2008-01","province":"重庆市","riverid":"2995","ssgs":"大唐集团","storage":"14.65","topLevel":"301.50","zgdw":""},{"angle":"30","area":"107.89100899115 29.2741327873911,107.8882810084 29.2757077889661,107.88873100885 29.2764872126089,107.8914589916 29.2749122110339,107.89100899115 29.2741327873911","bgColor":"#7F0000FF","borderColor":"#FF0000FF","capacity":"600","city":"武隆县","constructState":"已建","damType":"混凝土重力坝","dbid":"618","dbmc":"银盘","domination":"电力","height":"78.50","iconHeight":"26","iconPath":"http://www.dam.com.cn/images/icon/注册[电].png","iconPosition":"GISIconInfo","iconWidth":"26","isGisConfirm":"已核","kind":"注册[电]","latitude":"29.27531","longitude":"107.88987","normalWaterLevel":"215.00","productionTime":"2011-04","province":"重庆市","riverid":"2995","ssgs":"大唐集团","storage":"3.2","topLevel":"227.50","zgdw":""},{"angle":"-30","area":"","bgColor":"#FFFFFFFF","borderColor":"#FF808080","capacity":"530","city":"","constructState":"前期","damType":"","dbid":"933","dbmc":"白马","domination":"电力","height":"","iconHeight":"26","iconPath":"http://www.dam.com.cn/images/icon/前期[电].png","iconPosition":"GISIconInfo","iconWidth":"26","isGisConfirm":"已核","kind":"前期[电]","latitude":"29.48","longitude":"107.491","normalWaterLevel":"","productionTime":"","province":"","riverid":"2995","ssgs":"","storage":"","topLevel":"","zgdw":""},{"angle":"-40.50562454700","area":"","bgColor":"","borderColor":"","capacity":"1000","city":"","constructState":"规划","damType":"","dbid":"934","dbmc":"大溪口","domination":"","height":"","iconHeight":"26","iconPath":"http://www.dam.com.cn/images/icon/规划.png","iconPosition":"GISIconInfo","iconWidth":"26","isGisConfirm":"未核","kind":"规划","latitude":"29.506","longitude":"107.485","normalWaterLevel":"","productionTime":"","province":"","riverid":"2995","ssgs":"","storage":"","topLevel":"","zgdw":""}];
+    var _Dams = [];
+    var data = JSON.parse(localStorage['data']);
+    for (var i = 0; i < ids.length; i++) {
+        var obj = ids[i];
+        for (var j = 0; j < data.value.length; j++) {
+            var obj2 = data.value[j];
+            if(obj == obj2.dbid) {
+                _Dams.push(obj2);
+            }
+        }
+    }
+
+    $(document).ready(function () {
+        createProfileChart(_Dams);
+    });
+
+
+    //创建线路进度图
+    var _xAxisPixel;
+    var _yAxisPixel;
+    function createProfileChart(dams) {
+        var bodyWidth = $(window).width();
+        var sceneWidth = 500;
+        var sceneHeight = 300;
+        $("#container").css("height",(sceneHeight + 100) + "px");
+        var legendHeight = 140;
+        var legendWidth = 90;
+        var damWidth = 6; //大坝宽度像素
+
+        var xIndent = 80;  //X缩进
+        var yIndent = 50;  //Y缩进
+        var scaleLen = 8; //刻度线长度
+
+        dams = _.sortBy(dams, function(item) {
+          return -parseFloat(item.topLevel);
+        });
+
+        //计算坝顶高程
+        dams = calDamCrest(dams);
+
+        //计算最大直线距离
+        var maxDistance = 0;  //公里
+        dams[0].HorizontalDistance = 0;
+        var dd = 0;
+        for(var i = 1;i < dams.length;i++){
+            var px = parseFloat(dams[i - 1]["longitude"]);
+            var py = parseFloat(dams[i - 1]["latitude"]);
+            var x = parseFloat(dams[i]["longitude"]);
+            var y = parseFloat(dams[i]["latitude"]);
+            var dis = lantitudeLongitudeDist(px,py,x,y);
+            dd += dis;
+            dams[i].HorizontalDistance = dams[i - 1].HorizontalDistance + dis;
+            maxDistance = dams[i].HorizontalDistance;
+        }
+
+        if(maxDistance == 0)maxDistance = 100;
+
+        var xAxisScale = 10;
+        if(maxDistance < 200){
+            xAxisScale = 10;
+        }else if(maxDistance >= 200 && maxDistance < 300){
+            xAxisScale = 20;
+        }else if(maxDistance >= 300 && maxDistance < 400){
+            xAxisScale = 30;
+        }else if(maxDistance >= 300 && maxDistance < 400){
+            xAxisScale = 40;
+        }else if(maxDistance >= 400 && maxDistance < 500){
+            xAxisScale = 50;
+        }else if(maxDistance >= 600){
+            xAxisScale = 60;
+        }
+        maxDistance += 150; //temp
+        var xAxisScaleNum = Math.ceil(maxDistance / xAxisScale); //最大X刻度数
+        var maxXAxis = xAxisScaleNum * xAxisScale ; //最大X刻度距离值
+        var xAxisPixel = maxXAxis / sceneWidth;   //X轴每个像素代表的距离
+
+        _xAxisPixel = xAxisPixel;
+        //计算最大高程差
+        var maxElev = _.max(dams, function(dam){ return parseFloat(dam.topLevel);});
+        var maxYAxis = 0;
+        maxElev = maxElev.topLevel;
+        var yAxisScale = 10 ;
+        if(maxElev < 200){
+            yAxisScale = 10;
+        }else if(maxElev >= 200 && maxElev < 300){
+            yAxisScale = 20;
+        }else if(maxElev >= 200 && maxElev < 300){
+            yAxisScale = 30;
+        }else if(maxElev >= 300 && maxElev < 400){
+            yAxisScale = 40;
+        }else if(maxElev >= 400 && maxElev < 500){
+            yAxisScale = 50;
+        }else if(maxElev >= 500){
+            yAxisScale = 60;
+        }
+        var yAxisScaleNum = Math.ceil(maxElev / yAxisScale); //Y刻度数
+        var maxYAxis = yAxisScaleNum * yAxisScale;  //最大刻度高程值
+        var yAxisPixel = maxYAxis / sceneHeight;  //Y轴每个像素代表的高程
+        _yAxisPixel = yAxisPixel;
+
+        //坐标转换
+        dams = coordsChange(dams);
+
+        var chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'container',
+                events: {
+                    load: function () {
+                        // Draw the flow chart
+                        var ren = this.renderer,
+                        colors = Highcharts.getOptions().colors;
+
+
+                        var _pts = [];
+                        var _leftMargin = 0;  //像素
+                        var maxStorageIdx = 0;
+                        var maxStorageArea = 0;
+                        var lastangle = 0;
+
+                        //计算最大库容
+                        var maxStorageIdx = 0;
+                        var maxStorage = 0;
+                        for(var m = dams.length - 1;m >= 0;m--){
+                            if(dams[m].Storage > maxStorage){
+                                maxStorage = dams[m].Storage;
+                                maxStorageIdx = m;
+                            }
+                        }
+                        //计算最后一个长度
+                        var lastWidth = 0; //最后一个长度
+                        for(var m = dams.length - 1;m >= 0;m--){
+                            var dam = dams[m];
+                            var deltawidth = damWidth * m;
+
+                            var p1 = {X:dam.HorizontalDistance ,Y:dam.CrestElevation};
+                            var p2 = {X:dam.HorizontalDistance ,Y:dam.CrestElevation - dam.DamHeight};
+                            var p3 = {X:dam.HorizontalDistance ,Y:dam.NormalWaterLevel};
+                            p1.X += deltawidth;
+                            p2.X += deltawidth;
+                            p3.X += deltawidth;
+
+                            var x;
+                            _pts.push({X:p2.X + xIndent,Y:p2.Y});
+                            _pts.push({X:p1.X - damWidth + xIndent,Y:p2.Y});
+
+                            var up = _leftMargin;
+
+                            if (m > 0)
+                            {
+                                var ndam = dams[m - 1];
+                                var p4 = {X:ndam.HorizontalDistance,Y:ndam.CrestElevation - ndam.DamHeight};
+                                p4.X += deltawidth - damWidth ;
+                                up = p4.X;
+                                x = p4.X;
+
+                                if (p4.Y <= p3.Y)
+                                {
+                                    if (m == maxStorageIdx)
+                                    {
+                                        maxStorageArea = (p4.Y - p3.Y + p2.Y - p3.Y) * _yAxisPixel * (p1.X - p4.X - damWidth) * 0.5 * _xAxisPixel;
+
+                                    }
+                                }
+                                else
+                                {
+                                    x = p1.X - damWidth - (p1.X - damWidth - p4.X) * (p2.Y - p3.Y) / (p2.Y - p4.Y);
+
+                                    if (m == maxStorageIdx)
+                                    {
+                                        maxStorageArea = (p2.Y - p3.Y) * _yAxisPixel * (p1.X - x - damWidth) * 0.5 * _xAxisPixel;
+
+                                    }
+                                }
+                            }
+                            else
+                            {
+
+                                lastAngle = Math.atan((_pts[_pts.length - 3].X - _pts[_pts.length - 2].X) / (_pts[_pts.length - 3].Y - _pts[_pts.length - 2].Y));
+                                if (lastAngle < 0) lastAngle = 0;
+                                x = (dam.Storage / dams[maxStorageIdx].Storage * maxStorageArea )* 2 / (p2.Y - p1.Y);
+
+                                if (x < 0) x = 0;
+                                var x1 = Math.tan(lastAngle) * (p2.Y - p3.Y);
+                                x = Math.max(x, x1);
+                                lastWidth = x;
+                            }
+
+                        }     // end for
+
+                      //绘制X坐标轴
+                        ren.path(['M', xIndent, (sceneHeight) + yIndent, 'L', xIndent + sceneWidth , (sceneHeight + yIndent)])
+                        .attr({
+                            'stroke-width': 0.5,
+                            stroke: '#000000'
+                        })
+                        .add();
+                        //绘制X坐标轴"直线距离(KM)"文字
+                        ren.label('直线距离(KM)', sceneWidth - 10, sceneHeight + yIndent + 20)
+                        .css({
+                            fontSize: '14px',
+                            width: '14px',
+                            wordWrap: 'breakWord',
+                            fontFamily: '微软雅黑'
+                        })
+                        .add();
+                        //绘制X坐标轴刻度
+                        for(var i = 0;i <= xAxisScaleNum;i++){
+                            ren.path(['M', xIndent + (i * xAxisScale) / xAxisPixel, (sceneHeight + yIndent), 'L', xIndent + (i * xAxisScale) / xAxisPixel, (sceneHeight) + yIndent + scaleLen])
+                            .attr({
+                                'stroke-width': 0.5,
+                                stroke: 'black'
+                            })
+                            .add();
+                            if(i % 2 == 0){
+                                //绘制刻度数值
+                                var di = 7;
+                                if(i * xAxisScale >= 10 && i * xAxisScale < 100){
+                                    di = 12;
+                                }else if(i * xAxisScale >= 100){
+                                    di = 16;
+                                }
+                                ren.label(i * xAxisScale, xIndent + (i * xAxisScale) / xAxisPixel - di, (sceneHeight) + yIndent + scaleLen)
+                                .css({
+                                    color: 'black',
+                                    fontSize: '9px'
+                                }).add();
+                            }
+                        }
+                        //绘制Y坐标轴
+                        ren.path(['M', xIndent, (sceneHeight + yIndent), 'L', xIndent , yIndent - 10])
+                        .attr({
+                            'stroke-width': 0.5,
+                            stroke: 'black'
+                        })
+                        .add();
+                        //绘制Y坐标轴"高程"文字
+                        ren.label('高程', xIndent - 50, yIndent - 50)
+                        .css({
+                            fontSize: '14px',
+                            width: '14px',
+                            wordWrap: 'breakWord',
+                            fontFamily: '微软雅黑',
+                            writingMode: 'tb-rl',
+                            display: 'block'
+                        })
+                        .add();
+                        //绘制Y坐标轴刻度
+
+                        for(var i = 0;i <= yAxisScaleNum;i++){
+                            ren.path(['M', xIndent , (sceneHeight -  (i * yAxisScale) / yAxisPixel) + yIndent, 'L', xIndent - scaleLen, (sceneHeight -  (i * yAxisScale) / yAxisPixel + yIndent) ])
+                            .attr({
+                                'stroke-width': 0.5,
+                                stroke: 'black'
+                            })
+                            .add();
+                            if(i % 2 == 0){
+                                //绘制刻度数值
+                                var di = 7;
+                                if(i * yAxisScale >= 10 && i * yAxisScale < 100){
+                                    di = 12;
+                                }else if(i * yAxisScale >= 100){
+                                    di = 16;
+                                }
+                                ren.label(i * yAxisScale, xIndent  - 40, (sceneHeight -  (i * yAxisScale) / yAxisPixel) + yIndent - 10)
+                                .css({
+                                    color: 'black',
+                                    fontSize: '9px'
+                                }).add();
+                            }
+                        }
+                        //绘制图例
+                        ren.image("/static/images/legend.png", xIndent + 2, sceneHeight - (legendHeight - yIndent + 2), legendWidth, legendHeight).add();
+                        xIndent += lastWidth;
+                        //循环绘制其他大坝
+                        _pts = [];
+                        for(var m = dams.length - 1;m >= 0;m--){
+                            var dam = dams[m];
+
+                            var tip = "";
+
+                            var fillcol = "gray";
+                            var bordercol = "blue";
+                            var borderwidth = 1;
+                            var deltawidth = damWidth * m;
+
+                            var p1 = {X:dam.HorizontalDistance ,Y:dam.CrestElevation};
+                            var p2 = {X:dam.HorizontalDistance ,Y:dam.CrestElevation - dam.DamHeight};
+                            var p3 = {X:dam.HorizontalDistance ,Y:dam.NormalWaterLevel};
+                            p1.X += deltawidth;
+                            p2.X += deltawidth;
+                            p3.X += deltawidth;
+
+                            var x;
+                            _pts.push({X:p2.X + xIndent,Y:p2.Y});
+                            _pts.push({X:p1.X - damWidth + xIndent,Y:p2.Y});
+
+                            var up = _leftMargin;
+                            //draw reservoir
+                            var polygonPath = [];
+                            polygonPath.push('M');
+                            polygonPath.push(p3.X - damWidth + xIndent, sceneHeight - p3.Y + yIndent);
+                            polygonPath.push('L');
+                            polygonPath.push(p2.X - damWidth + xIndent, sceneHeight - p2.Y+ yIndent);
+
+                            if (m > 0)
+                            {
+                                var ndam = dams[m - 1];
+                                var p4 = {X:ndam.HorizontalDistance,Y:ndam.CrestElevation - ndam.DamHeight};
+                                p4.X += deltawidth - damWidth ;
+                                up = p4.X;
+                                x = p4.X;
+
+                                if (p4.Y <= p3.Y)
+                                {
+                                    polygonPath.push(p4.X + xIndent, sceneHeight - p4.Y+ yIndent);
+                                    polygonPath.push(p4.X + xIndent, sceneHeight - p3.Y+ yIndent);
+
+                                }
+                                else
+                                {
+                                    x = p1.X - damWidth - (p1.X - damWidth - p4.X) * (p2.Y - p3.Y) / (p2.Y - p4.Y);
+                                    polygonPath.push(x + xIndent, sceneHeight - p3.Y+ yIndent);
+
+                                }
+                            }
+                            else
+                            {
+
+                                polygonPath.push(xIndent - lastWidth, sceneHeight - p3.Y+ yIndent);
+
+                            }
+                            var polygonStyle = {};
+                            if (dam.constructState.indexOf("已建") >= 0 || dam.constructState.indexOf("已蓄水") >= 0)
+                            {
+                                polygonStyle = {
+                                     fill: {
+                                        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                                        stops: [
+                                                    [0, Highcharts.Color("#91e3e7").setOpacity(1).get('rgb')],
+                                                    [1, Highcharts.Color("#ffffff").setOpacity(1).get('rgb')]
+                                                ]
+                                    }
+                                }
+
+                            }
+                            else
+                            {
+
+                                polygonStyle = {
+                                    fill:"white"
+                                }
+                            }
+                            //ToolTipService.SetToolTip(polygon, tip);
+
+                            var damPolygon = ren.path(polygonPath)
+                            .attr(polygonStyle).add();
+                            damPolygon.element.dam = dams[m];
+                            damPolygon.element.onmouseover = function(e){
+                                //this.parentNode.removeChild(e.target);
+
+                                console.log(this.dam);
+                            }
+
+                            //draw water level line
+                            var waterLevelLinePath = [];
+                            waterLevelLinePath.push('M');
+                            waterLevelLinePath.push(p3.X - damWidth + xIndent, sceneHeight - p3.Y+ yIndent);
+                            waterLevelLinePath.push('L');
+                            waterLevelLinePath.push(x + xIndent, sceneHeight - p3.Y+ yIndent);
+                            var waterLevelLineStyle = {};
+                            if (dam.constructState.indexOf("规划") >= 0 || dam.constructState.indexOf("前期") >= 0 || dam.constructState.indexOf("未蓄水") >= 0)
+                            {
+                                waterLevelLineStyle = {
+                                    'stroke-width': 1,
+                                    stroke: 'gray',
+                                    dashstyle: '5,2'
+                                };
+                            }
+                            else
+                            {
+                                waterLevelLineStyle = {
+                                    'stroke-width': 1,
+                                    stroke: '#91e3e7'
+                                };
+                            }
+                            ren.path(waterLevelLinePath).attr(waterLevelLineStyle).add();
+                            //draw water level text
+                            var txtWidth = 20;
+                            var normalWaterLevel = dam.normalWaterLevel;
+                            normalWaterLevel = parseInt(normalWaterLevel);
+                            var levelX = (x + p3.X - damWidth) / 2 - txtWidth / 2 - 2 + xIndent;
+                            if(m == 0){
+                                levelX = xIndent - (lastWidth / 2) - damWidth - 4;
+                            }
+                            ren.label(normalWaterLevel, levelX, sceneHeight - p3.Y  + yIndent - 20)
+                            .css({
+                                fontSize: '11px'
+                            }).add();
+
+
+                            //draw dam name
+                            var damName=treatDamName(dam.dbmc);
+                            ren.label(damName, p2.X - 6 + xIndent, sceneHeight - p2.Y+ yIndent)
+                            .css({
+                                fontSize: '12px',
+                                width: '12px',
+                                wordWrap: 'breakWord',
+                                fontFamily: '微软雅黑',
+                                writingMode: 'tb-rl',
+                                display: 'block'
+                            }).add();
+
+                            //add dam
+                            var damPath = [];
+                            damPath.push('M');
+                            damPath.push(p1.X + xIndent, sceneHeight - p1.Y+ yIndent);
+                            damPath.push('L');
+                            damPath.push(p2.X + xIndent, sceneHeight - p2.Y+ yIndent);
+                            damPath.push(p2.X - damWidth + xIndent, sceneHeight - p2.Y+ yIndent);
+                            damPath.push(p2.X - damWidth + xIndent, sceneHeight - p1.Y+ yIndent);
+                            var damStyle = {'stroke-width': 1};
+                            if(dam.domination.indexOf("电力") != -1){
+                                damStyle["stroke"] = 'red';
+                            }else if(dam.domination.indexOf("水利") != -1){
+                                damStyle["stroke"] = 'blue';
+                            }
+                            if(dam.constructState.indexOf("已建") != -1){
+                                damStyle["fill"] = damStyle["stroke"];
+                            }else{
+                                damStyle["fill"] = "white";
+                            }
+                            if(dam.constructState.indexOf("规划") != -1 || dam.constructState.indexOf("前期") != -1){
+                                damStyle["dashstyle"] = "5,2";
+                            }
+                            ren.path(damPath).attr(damStyle).add();
+
+                            if (dam.constructState.indexOf("已蓄水") >= 0)
+                            {
+                                var polygonPath = [];
+                                polygonPath.push('M');
+                                polygonPath.push(p1.X + xIndent, sceneHeight - (p1.Y + p2.Y) / 2+ yIndent);
+                                polygonPath.push('L');
+                                polygonPath.push(p2.X + xIndent, sceneHeight - p2.Y+ yIndent);
+                                polygonPath.push(p2.X - damWidth + xIndent, sceneHeight - p2.Y+ yIndent);
+                                polygonPath.push(p2.X - damWidth + xIndent, sceneHeight - (p1.Y + p2.Y) / 2+ yIndent);
+                                var polygonStyle = {};
+                                polygonStyle["stroke"] = damStyle["stroke"];
+                                polygonStyle["fill"] = damStyle["fill"];
+                                ren.path(polygonPath).attr(polygonStyle).add();
+
+                            }
+                            else if (dam.constructState.indexOf("前期") >= 0)
+                            {
+                                var h = (p2.Y - p1.Y) / 4 / 2;
+                                if (h > 6) h = 6;
+
+                                var polylinePath = [];
+                                polylinePath.push('M');
+                                polylinePath.push(p1.X - damWidth / 2 + xIndent, sceneHeight - (p1.Y + p2.Y) / 2 + h+ yIndent);
+                                polylinePath.push('L');
+                                polylinePath.push(p1.X - damWidth / 2 + xIndent, sceneHeight - (p1.Y + p2.Y) / 2 - h+ yIndent);
+                                var pollineStyle = {'stroke-width':2};
+                                pollineStyle["stroke"] = damStyle["stroke"];
+                                ren.path(polylinePath).attr(pollineStyle).add();
+                            }
+                        }     // end for
+
+                        //////////////////
+
+
+                    }
+                }
+            },
+            title: {
+                text: ' '
+            }
+
+        });
+    }
+
+    //计算坝顶高程
+    function calDamCrest(dams)
+    {
+        var sum=0.0;;
+        var n = 0;
+        var tdams = [];
+        for (var i = 0; i < dams.length; i++)
+        {
+            if(dams[i].height != ""){  //坝高为空不参与分析
+                var topLevel = parseFloat(dams[i].topLevel);
+                var normalWaterLevel = parseFloat(dams[i].normalWaterLevel);
+                var height = parseFloat(dams[i].height);
+                dams[i].NormalWaterLevel = normalWaterLevel;
+                dams[i].latitude = parseFloat(dams[i].latitude);
+                dams[i].longitude = parseFloat(dams[i].longitude);
+                dams[i].DamHeight = height;
+                dams[i].Storage = parseFloat(dams[i].storage);
+                if (topLevel > normalWaterLevel)
+                {
+                    sum += topLevel - normalWaterLevel;
+                    n++;
+                }
+                tdams.push(dams[i]);
+            }
+
+        }
+        dams = tdams;
+        var avg= sum / n;
+        for (var i = 0; i < dams.length; i++)
+        {
+            var topLevel = parseFloat(dams[i].topLevel);
+            var normalWaterLevel = parseFloat(dams[i].normalWaterLevel);
+            if (topLevel <= normalWaterLevel)
+            {
+                dams[i].CrestElevation = normalWaterLevel+avg +0.00001;
+            }else{
+                dams[i].CrestElevation = topLevel;
+            }
+
+        }
+        return dams;
+    }
+
+    //转屏幕坐标
+    function coordsChange(dams)
+    {
+        for (var i = 0; i < dams.length; i++)
+        {
+            var normalWaterLevel = dams[i].normalWaterLevel;
+            normalWaterLevel = normalWaterLevel / _yAxisPixel;
+            var height = dams[i].DamHeight;
+            height = height / _yAxisPixel;
+            dams[i].NormalWaterLevel = normalWaterLevel;
+            dams[i].DamHeight = height;
+            dams[i].Storage = dams[i].Storage;  //
+            dams[i].CrestElevation = dams[i].CrestElevation / _yAxisPixel;
+            dams[i].HorizontalDistance = dams[i].HorizontalDistance / _xAxisPixel;
+        }
+        return dams;
+    }
+
+    //处理大坝空格
+    function treatDamName(dn)
+    {
+        dn = dn.replace("大坝","");
+        dn = dn.replace("水电站", "");
+        dn = dn.replace("池坝", "");
+        dn = dn.replace("库坝", "");
+        return dn;
+    }
+
+    //计算两点距离
+    function lantitudeLongitudeDist(lon1, lat1, lon2,lat2)
+    {
+        var EARTH_RADIUS=6371.004;
+        var radLat1 = rad(lat1);
+        var radLat2 = rad(lat2);
+
+        var radLon1 = rad(lon1);
+        var radLon2 = rad(lon2);
+
+        if (radLat1 < 0)
+            radLat1 = Math.PI / 2 + Math.abs(radLat1);// south
+        if (radLat1 > 0)
+            radLat1 = Math.PI / 2 - Math.abs(radLat1);// north
+        if (radLon1 < 0)
+            radLon1 = Math.PI * 2 - Math.abs(radLon1);// west
+        if (radLat2 < 0)
+            radLat2 = Math.PI / 2 + Math.abs(radLat2);// south
+        if (radLat2 > 0)
+            radLat2 = Math.PI / 2 - Math.abs(radLat2);// north
+        if (radLon2 < 0)
+            radLon2 = Math.PI * 2 - Math.abs(radLon2);// west
+        var x1 = EARTH_RADIUS * Math.cos(radLon1) * Math.sin(radLat1);
+        var y1 = EARTH_RADIUS * Math.sin(radLon1) * Math.sin(radLat1);
+        var z1 = EARTH_RADIUS * Math.cos(radLat1);
+
+        var x2 = EARTH_RADIUS * Math.cos(radLon2) * Math.sin(radLat2);
+        var y2 = EARTH_RADIUS * Math.sin(radLon2) * Math.sin(radLat2);
+        var z2 = EARTH_RADIUS * Math.cos(radLat2);
+
+        var d = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2));
+        //余弦定理求夹角
+        var theta = Math.acos((EARTH_RADIUS * EARTH_RADIUS + EARTH_RADIUS * EARTH_RADIUS - d * d) / (2 * EARTH_RADIUS * EARTH_RADIUS));
+        var dist = theta * EARTH_RADIUS;
+        return dist;
+    }
+
+    function rad(d)
+    {
+        return d * Math.PI / 180.0;
+    }
+
+</script>

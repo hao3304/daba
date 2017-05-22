@@ -3,6 +3,8 @@
         <el-col :span='5' class='main-wrap' v-show='container.left'  >
             <emergency @click='onEmergencyClick' @close='onCloseLeft' v-if='container.left == "emergency"' ></emergency>
             <rain  @close='onCloseLeft' @search='onSearchRainFall' v-if='container.left == "rainfall"' ></rain>
+            <theme @close='onCloseLeft'  v-if='container.left == "theme"' ></theme>
+            <x-section @close='onCloseLeft'  v-if='container.left == "section"' ></x-section>
             <search-form @close='onCloseLeft' v-show='container.left =="search"'></search-form>
             <search-company @close='onCloseLeft' @node-click='flyTo' v-show='container.left =="company"'></search-company>
             <search-river @close='onCloseLeft' v-if='container.left =="river"'></search-river>
@@ -340,6 +342,8 @@
     import pip from '@mapbox/leaflet-pip';
     import emergency from '../components/emergency.vue';
     import rain from '../components/rain.vue';
+    import theme from '../components/theme.vue';
+    import section from '../components/section.vue';
 
     require('leaflet.markercluster/dist/MarkerCluster.Default.css');
 
@@ -604,6 +608,7 @@
                         this.list = rep;
                         this.dam.list = rep;
                         this.renderMarkers(this.list);
+                        this.$ls.set('data',rep);
                  });
             },
             onToolbarClick(type){
@@ -1022,7 +1027,9 @@
             itree,
             riverRegion,
             emergency,
-            rain
+            rain,
+            theme,
+            xSection:section
         },
         mounted() {
             this.$nextTick(()=>{

@@ -13,7 +13,8 @@ require('leaflet/dist/leaflet.css');
 import "element-ui/lib/theme-default/index.css";
 
 import VueStash from 'vue-stash';
-
+import VueLocalStorage from 'vue-ls';
+Vue.use(VueLocalStorage);
 Vue.use(VueStash);
 Vue.use(UI);
 Vue.use(Router);
