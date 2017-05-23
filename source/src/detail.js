@@ -2,7 +2,7 @@
  * Created by jack on 16/11/14.
  */
 
-const Vue = require('vue');
+const Vue = require('vue/dist/vue.min');
 const UI = require('element-ui');
 
 require('./modules/datefomat');

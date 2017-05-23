@@ -30,10 +30,13 @@ export const getEmergency = (params)=>co($.get(`${prefix}/GIS/emergencySupport/g
 export const getAccidentInfo = (params)=>co($.get(`${prefix}/GIS/emergencySupport/getAccidentInfo.jsp`,params));
 export const getAnalyseResult = (params)=>co($.get(`${prefix}/GIS/rainPicture/getAnalyseResult.jsp`,params));
 export const getThemeList = (params = {})=>co($.get(`${prefix}/GIS/thematicMap/getList.jsp`,params));
-export const addTheme = (params = {})=>co($.get(`${prefix}/GIS/thematicMap/add.jsp`,params));
+export const addTheme = (params = {})=>co($.get(`${prefix}/GIS/thematicMap/.jsp`,params));
+export const editTheme = (params = {})=>co($.get(`${prefix}/GIS/thematicMap/edit.jsp`,params));
 export const deleteTheme = (params = {})=>co($.get(`${prefix}/GIS/thematicMap/del.jsp`,params));
 export const addIsosurface = (params = {})=>co($.get(`${prefix}/GIS/thematicMap/addIsosurface.jsp`,params));
 export const getIsosurface = (params = {})=>co($.get(`${prefix}/GIS/thematicMap/getIsosurface.jsp`,params));
+export const editIsosurface = (params = {})=>co($.get(`${prefix}/GIS/thematicMap/editIsosurface.jsp`,params));
+export const delIsosurface = (params = {})=>co($.get(`${prefix}/GIS/thematicMap/delIsosurface.jsp`,params));
 export const addSection = (params = {})=>co($.get(`${prefix}/GIS/basin/addSection.jsp`,params));
 export const getSectionList = (params = {})=>co($.get(`${prefix}/GIS/basin/getSectionList.jsp`,params));
 export const updateSection = (params = {})=>co($.get(`${prefix}/GIS/basin/updateSection.jsp`,params));
