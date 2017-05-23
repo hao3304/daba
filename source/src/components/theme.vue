@@ -6,7 +6,7 @@
         </div>
         <div  class='theme' v-loading.body='loading'>
 
-            <el-table :data=data  @expand='onExpand' :expand-row-keys='current' row-key='ID'>
+            <el-table :data=data  @expand='onExpand' row-key='ID'>
                 <el-table-column type="expand">
                     <template scope="props">
                        <ul>
@@ -259,7 +259,6 @@
             onExpand(row,expand) {
                 if(!expand)return;
                 row.children = [];
-                this.current = [row.ID];
                 getIsosurface({MAP_ID:row.ID}).then(rep=>{
                     rep = JSON.parse(rep);
                     row.children = rep;
