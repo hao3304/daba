@@ -38,35 +38,37 @@
                 </el-row>
             </div>
 
-            <div>
-                <h5 style="padding:0 20px;">图例</h5>
-                <ul class="legend-list">
-                    <li v-for='l in legend' v-show='l.PICTURE_TYPE == query.type'>
-                        <span>{{l.LEGEND_NAME}}</span>
-                        <span :style="{backgroundColor:'rgb('+l.LEGEND_COLOR+')'}" class="legend-color">
-                        </span>
-                    </li>
-                </ul>
-            </div>
+            <fieldset style="margin-top:20px;">
+                <legend>图例</legend>
+                <table class="legend-list" style="width:100%">
+                    <tr  v-for='l in legend' v-show='l.PICTURE_TYPE == query.type'>
+                        <td>
+                            {{l.LEGEND_NAME}}
+                        </td>
+                        <td>
+                             <span :style="{backgroundColor:'rgb('+l.LEGEND_COLOR+')'}" class="legend-color">
+                            </span>
+                        </td>
+                        <td>
+                            <a v-show='l.LIST.length>0' href="javascript:;" @click='onShowList(l.LIST)'>[{{l.LIST.length}}]</a>
+                        </td>
+                    </tr>
+                </table>
+
+            </fieldset>
         </div>
     </div>
 </template>
 <style lang='less'>
     .ranfall{
+        padding: 0 10px;
         .legend-list{
-            padding:0;
-            margin:0;
-            li{
-                list-style: none;
+            tr{
+                td{
+                    font-size: 14px;
+                }
                 line-height: 28px;
                 text-align: center;
-                box-sizing: border-box;
-                span:first-child{
-                    display: inline-block;
-                    width:45px;
-                    padding:0 10px;
-                    text-align: right;
-                }
                 .legend-color{
                     display: inline-block;
                     height:24px;
@@ -89,67 +91,78 @@
                         "ID": "1",
                         "LEGEND_COLOR": "165,241,141",
                         "LEGEND_NAME": "0-10",
-                        "PICTURE_TYPE": "1"
+                        "PICTURE_TYPE": "1",
+                        "LIST":[]
                         },
                         {
                         "ID": "2",
                         "LEGEND_COLOR": "61,184,60",
                         "LEGEND_NAME": "10-25",
-                        "PICTURE_TYPE": "1"
+                        "PICTURE_TYPE": "1",
+                         "LIST":[]
                         },
                         {
                         "ID": "3",
                         "LEGEND_COLOR": "96,183,252",
                         "LEGEND_NAME": "25-50",
-                        "PICTURE_TYPE": "1"
+                        "PICTURE_TYPE": "1",
+                         "LIST":[]
                         },
                         {
                         "ID": "4",
                         "LEGEND_COLOR": "1,1,248",
                         "LEGEND_NAME": "50-100",
-                        "PICTURE_TYPE": "1"
+                        "PICTURE_TYPE": "1",
+                         "LIST":[]
                         },
                         {
                         "ID": "5",
                         "LEGEND_COLOR": "249,0,249",
                         "LEGEND_NAME": "100-250",
-                        "PICTURE_TYPE": "1"
+                        "PICTURE_TYPE": "1",
+                         "LIST":[]
                         },
                         {
                         "ID": "6",
                         "LEGEND_COLOR": "114,0,0",
                         "LEGEND_NAME": ">250",
-                        "PICTURE_TYPE": "1"
+                        "PICTURE_TYPE": "1",
+                         "LIST":[]
                         },
                         {
                         "ID": "7",
                         "LEGEND_COLOR": "165,241,141",
                         "LEGEND_NAME": "0-10",
-                        "PICTURE_TYPE": "2"
+                        "PICTURE_TYPE": "2",
+                         "LIST":[]
                         },
                         {
                         "ID": "8",
                         "LEGEND_COLOR": "61,184,60",
                         "LEGEND_NAME": "10-25",
-                        "PICTURE_TYPE": "2"
+                        "PICTURE_TYPE": "2",
+                         "LIST":[]
                         },
                         {
                         "ID": "9",
                         "LEGEND_COLOR": "96,183,252",
                         "LEGEND_NAME": "25-50",
-                        "PICTURE_TYPE": "2"
+                        "PICTURE_TYPE": "2",
+                         "LIST":[]
                         },
                         {
                         "ID": "10",
                         "LEGEND_COLOR": "1,1,248",
                         "LEGEND_NAME": "50-100",
-                        "PICTURE_TYPE": "2"
+                        "PICTURE_TYPE": "2",
+                         "LIST":[]
                         },
                         {
                         "ID": "11",
                         "LEGEND_COLOR": "249,0,249",
                         "LEGEND_NAME": ">=100",
-                        "PICTURE_TYPE": "2"
+                        "PICTURE_TYPE": "2",
+                         "LIST":[]
                         }
                   ],
                   query:{
@@ -166,11 +179,11 @@
         },
 
         methods:{
-            render() {
-
-            },
             onSearch() {
                 this.loading = true;
+                this.legend.forEach(l=>{
+                    l.LIST = [];
+                })
                 getAnalyseResult({type:this.query.type,date:this.query.date.Format('yyyy-MM-dd')}).then(rep=>{
                     let data = this.trans(rep);
                     this.$emit('search',data);
@@ -183,7 +196,13 @@
             trans(data) {
                 data = JSON.parse(data);
                 return data.map(d=>{
-                let color = this.getColor(d.LEGEND_ID)
+                let legend = this.getLegend(d.LEGEND_ID);
+
+                if(d.DAM_IDS) {
+                    legend.LIST = legend.LIST.concat(d.DAM_IDS.split(','));
+                }
+
+                let color = legend.LEGEND_COLOR;
                     return {
                         color:`rgb(${color})`,
                         area: this.getArea(d.GIS_AREAS)
@@ -191,10 +210,10 @@
 
                 })
             },
-            getColor(id){
-                return this.legend.find(f=>{
+            getLegend(id) {
+                  return this.legend.find(f=>{
                    return f.ID == id;
-                })['LEGEND_COLOR'];
+                });
             },
             getArea(str) {
                 str = str.replace('MULTIPOLYGON(((','').replace(')))','');
@@ -203,6 +222,14 @@
                     let latlng = l.split(' ');
                     return [parseFloat(latlng[1]),parseFloat(latlng[0])]
                 })
+            },
+            onShowList(list) {
+                let data =  this.dam.list.filter(d=>{
+                  return  list.indexOf(d.dbid) > -1;
+                })
+                this.rightSpan.list = data;
+                this.rightSpan.name = '降雨分析';
+                this.container.right = true;
             }
         },
         watch:{

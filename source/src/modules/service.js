@@ -43,8 +43,8 @@ export const updateSection = (params = {})=>co($.get(`${prefix}/GIS/basin/update
 export const deleteSection = (params = {})=>co($.get(`${prefix}/GIS/basin/deleteSection.jsp`,params));
 
 export const getPlaceNames = (params={})=>{
-    if(params.regiontype){
-        return co($.getJSON(`${prefix}/DataService.svc/PlaceNames`,{regiontype:'city',...params}));
+    if(params.regionType){
+        return co($.getJSON(`/DamGIS/placename/placename!findPlaceNames.action`,{regionType:'city',...params}));
     }else{
         return co($.getJSON('/static/json/region.json'));
     }

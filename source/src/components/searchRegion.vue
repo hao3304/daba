@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class='header'>
+        <div class='header' v-show='!inline'>
             <span class='title'>省市区域查询</span>
             <el-button style='float:right;color:#20a0ff;margin-top:2px;' @click='onClose' type="text" icon='circle-close'></el-button>
         </div>
@@ -53,6 +53,7 @@
 
     export default{
         store:['container','rightSpan'],
+        props:['inline'],
         data(){
             return{
                 province:[
@@ -76,11 +77,11 @@
         methods:{
             onClose(){
                 this.$emit('close');
-                this.$refs.provinceTree.setCheckedKeys([]);
+                //this.$refs.provinceTree.setCheckedKeys([]);
                 this.$emit('select',[]);
             },
             renderProvince(){
-                getPlaceNames({regiontype:''}).then((result)=>{
+                getPlaceNames({regionType:''}).then((result)=>{
                     this.province = this.transData(result);
                     this.loading = false;
                 })
@@ -120,8 +121,11 @@
                         });
                         resolve(result.children);
                     }else if(node.data.BigRegionName){
-                        getPlaceNames({regiontype:'city',regioncode:node.data.RegionCode}).then((rep)=>{
-                            resolve(rep||[]);
+                        getPlaceNames({regionType:'city',regionCode:node.data.RegionCode}).then((rep)=>{
+                            let list = rep.objInfo.dataList;
+                            resolve(list.map(d=>{
+                            return {RegionName:d.REGIONNAME,Geometry:d.COORDS,Color:d.REGIONCOLOR};
+                        })||[]);
                         })
 
                     }else{
@@ -159,10 +163,12 @@
             }
         },
         mounted(){
-            $('.search-region').slimScroll({ height: document.documentElement.clientHeight - 37 });
-             $(window).resize(function(){
-                $('.search-region').slimScroll({ height: document.documentElement.clientHeight - 37 });
-             });
+            if(!this.inline) {
+                 $('.search-region').slimScroll({ height: document.documentElement.clientHeight - 37 });
+                 $(window).resize(function(){
+                    $('.search-region').slimScroll({ height: document.documentElement.clientHeight - 37 });
+                 });
+            }
         },
         watch:{
             activeName(active){

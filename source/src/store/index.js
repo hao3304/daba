@@ -12,11 +12,13 @@ export const store = {
     dam:{
         list:[],
         legend:[],
-        rivers:[]
+        rivers:[],
+        source:[]
     },
     layer:{
         mode:'全国',
         legend:[],
+        legend2:['在建','已建','前期','规划'],
         state:['已核','未核']
     },
     rightSpan:{

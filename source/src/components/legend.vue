@@ -9,30 +9,44 @@
         <transition name='legend'>
             <el-tabs type="border-card" v-model='tab' v-show='info' >
                 <el-tab-pane label="地图图例" name="first">
-                    <div style="text-align:center;height:30px;" >
-                        <el-checkbox-group size='small' v-model='layer.state'>
-                            <el-checkbox label="已核"></el-checkbox>
-                            <el-checkbox label="未核"></el-checkbox>
-                        </el-checkbox-group>
+                    <div v-show='type == "normal"'>
+                        <div style="text-align:center;height:30px;" >
+                            <el-checkbox-group size='small' v-model='layer.state'>
+                                <el-checkbox label="已核"></el-checkbox>
+                                <el-checkbox label="未核"></el-checkbox>
+                            </el-checkbox-group>
+                        </div>
+                        <div class="control-list">
+                            <el-radio-group size='small' v-model='layer.mode' >
+                                <el-radio-button label="全国"></el-radio-button>
+                                <el-radio-button label="电力"></el-radio-button>
+                                <el-radio-button label="水利"></el-radio-button>
+                                <el-radio-button label="不明"></el-radio-button>
+                            </el-radio-group>
+                        </div>
+                        <ul class="legend-list" style="padding-left:30px;">
+                            <li v-for="l in stat" v-if='l.children.length>0'>
+                                <el-checkbox :label="l.legendName" v-model='layer.legend'>
+                                    <img :src="l.iconPath" :alt="l.legendName">
+                                    <span style='font-size:12px;'>{{l.legendName}}</span>
+                                    <a style='font-size:12px;' @click='onLegendClick(l)' href='javascript:;'>[{{l.children.length}}]</a></el-checkbox>
+                            </li>
+                        </ul>
+
                     </div>
-                    <div class="control-list">
-                        <el-radio-group size='small' v-model='layer.mode' >
-                            <el-radio-button label="全国"></el-radio-button>
-                            <el-radio-button label="电力"></el-radio-button>
-                            <el-radio-button label="水利"></el-radio-button>
-                            <el-radio-button label="不明"></el-radio-button>
-                        </el-radio-group>
+                    <div v-show='type == "river"'>
+                        <ul class="legend-list" style="padding-left:30px;">
+                            <li v-for="l in stat2" v-if='l.children.length>0'>
+                                <el-checkbox :label="l.name" v-model='layer.legend2'>
+                                    <img :src="l.icon" style="width:28px;height:18px;border:1px solid #ddd" :alt="l.name">
+                                    <span style='font-size:12px;'>{{l.name}}</span>
+                                </el-checkbox>
+                            </li>
+                        </ul>
                     </div>
-                    <ul class="legend-list" style="padding-left:30px;">
-                        <li v-for="l in stat" v-if='l.children.length>0'>
-                            <el-checkbox :label="l.legendName" v-model='layer.legend'>
-                                <img :src="l.iconPath" :alt="l.legendName">
-                                <span style='font-size:12px;'>{{l.legendName}}</span>
-                                <a style='font-size:12px;' @click='onLegendClick(l)' href='javascript:;'>[{{l.children.length}}]</a></el-checkbox>
-                        </li>
-                    </ul>
+
                 </el-tab-pane>
-                <el-tab-pane label="图层控制" name="second">
+                <el-tab-pane  v-show='type =="normal"' label="图层控制" name="second">
 
                     <div class="control-list">
                         <span>显示标签</span>
@@ -61,6 +75,7 @@
                         <!--</el-switch>-->
                     <!--</div>-->
                 </el-tab-pane>
+
             </el-tabs>
         </transition>
     </div>
@@ -177,6 +192,7 @@
 
     export default{
         store:['dam','layer','rightSpan','container'],
+        props:['type'],
         data(){
             return {
                 legend:[],
@@ -184,7 +200,13 @@
                 tooltip:false,
                 loading:false,
                 area:true,
-                tab:'first'
+                tab:'first',
+                riverLegend:[
+                    {name:'已建',icon:'/static/images/yijian.png',children:[]},
+                    {name:'在建',icon:'/static/images/zaijian.png',children:[]},
+                    {name:'前期',icon:'/static/images/qianqi.png',children:[]},
+                    {name:'规划',icon:'/static/images/guihua.png',children:[]}
+                ]
             }
         },
         computed:{
@@ -200,6 +222,23 @@
                     list.push(l);
                 });
                 return list;
+            },
+            stat2(){
+
+                this.riverLegend.forEach(r=>r.children = []);
+
+                this.dam.list.forEach((d)=>{
+                         if(d.kind.indexOf('在建')>-1) {
+                                this.riverLegend[1].children.push(d);
+                           }else if(d.kind.indexOf('前期')>-1){
+                                this.riverLegend[2].children.push(d);
+                           }else if(d.kind.indexOf('规划')>-1){
+                                 this.riverLegend[3].children.push(d);
+                           }else{
+                                this.riverLegend[0].children.push(d);
+                           }
+                    })
+                return this.riverLegend;
             }
         },
         methods:{
@@ -232,6 +271,12 @@
                     if(this.loading){
                         this.$emit('change');
                     }
+                }
+            },
+            type(t) {
+
+                if(t == 'river') {
+                    this.info = true;
                 }
             }
         },

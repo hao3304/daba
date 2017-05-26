@@ -8,13 +8,13 @@
             <search-form @close='onCloseLeft' v-show='container.left =="search"'></search-form>
             <search-company @close='onCloseLeft' @node-click='flyTo' v-show='container.left =="company"'></search-company>
             <search-river @close='onCloseLeft' v-if='container.left =="river"'></search-river>
-            <search-region @close='onCloseLeft' @select='onRegionSelect' v-show='container.left =="region"'></search-region>
+            <search-region @close='onCloseLeft' @select='onRegionSelect' v-if='container.left =="region"'></search-region>
             <river-region @close='onCloseRiverRegion' @check='onRegionCheck' v-if='container.left =="river-region"'></river-region>
             <toolbar @toolbar-click="onToolbarClick" @close='onCloseLeft' v-show='container.left =="tool"' class='toolbar'></toolbar>
         </el-col>
         <el-col :span="center_span" class='main-wrap' style="height: 100%;position:relative">
             <div id="map"  style="height: 100%"></div>
-            <clegend @change='filterDam' @area-change='onAreaChange' @tooltip-change='onTooltipChange' style="position: absolute;z-index: 1000;right: 10px;top:50px;"></clegend>
+            <clegend :type='legend' @change='filterDam' @area-change='onAreaChange' @tooltip-change='onTooltipChange' style="position: absolute;z-index: 1000;right: 10px;top:50px;"></clegend>
             <layers @change='onLayerChange' style="bottom: 10px;right: 10px;"></layers>
             <search></search>
             <login></login>
@@ -371,7 +371,7 @@
         data() {
             return {
                 height: document.documentElement.clientHeight - 40,
-                zoom:14,
+                zoom:4,
                 center:[38,115],
                 minZoom:2,
                 tooltip:false,
@@ -412,7 +412,8 @@
                     lat:null,
                     distance:null
                 },
-                currentPage:1
+                currentPage:1,
+                legend:'normal'
             }
         },
         computed:{
@@ -538,15 +539,27 @@
                 this.getDamList();
                 this._map = this.map;
             },
-            renderMarkers(rep){
+            renderMarkers(rep,type){
                 this.markerLayers.clearLayers();
                 this.areaLayers.clearLayers();
                 rep.forEach((m)=>{
-                    this.addMarker(m);
+                    this.addMarker(m,type);
                 });
                 this.map.spin(false);
             },
-            addMarker(m){
+            getRiverIcon(type) {
+
+               if(type.indexOf('在建')>-1) {
+                    return '/static/images/zaijian.png';
+               }else if(type.indexOf('前期')>-1){
+                    return '/static/images/qianqi.png';
+               }else if(type.indexOf('规划')>-1){
+                    return '/static/images/guihua.png';
+               }else{
+                    return '/static/images/yijian.png';
+               }
+            },
+            addMarker(m,type){
                 if(typeof m.isShow  =='boolean'&& !m.isShow){
                         return;
                     }
@@ -554,8 +567,20 @@
                     let lat = parseFloat(m.latitude),
                         lng = parseFloat(m.longitude);
                     if(lat&&lng){
-                        //let icon = new L.icon({iconUrl:m.iconPath,iconSize:[parseInt(m.iconWidth),parseInt(m.iconHeight)]})
-                        let icon = L.divIcon({className:"my-div-icon",html:`<img src="${m.iconPath}" style="width:${m.iconWidth}px;height:${m.iconHeight}px;margin-left:-${m.iconWidth/4}px;margin-top:-${m.iconHeight/4}px"><span class='tag'>${m.dbmc}</span>`});
+                        let icon;
+                        if(type !='river'){
+                             icon = L.divIcon({className:"my-div-icon",html:`<img src="${m.iconPath}" style="width:${m.iconWidth}px;height:${m.iconHeight}px;margin-left:-${m.iconWidth/4}px;margin-top:-${m.iconHeight/4}px"><span class='tag'>${m.dbmc}</span>`});
+                        }else{
+                             let path = this.getRiverIcon(m.kind);
+                             icon = L.divIcon({className:"my-div-icon",html:`<img src="${path}" style="width:18px;height:8px;margin-left:-6.5px;margin-top:-6.5px;
+                             transform:rotate(${m.angle||0}deg);
+                             -ms-transform:rotate(${m.angle||0}deg);
+                            -moz-transform:rotate(${m.angle||0}deg);
+                            -webkit-transform:rotate(${m.angle||0}deg);
+                            -o-transform:rotate(${m.angle||0}deg);
+                             ">`});
+                        }
+
                         let marker = new L.marker([lat,lng],{
                         icon:icon,
                         name:m.dbmc,
@@ -607,6 +632,7 @@
                  getDma().then((rep)=>{
                         this.list = rep;
                         this.dam.list = rep;
+                        this.dam.source = rep;
                         this.renderMarkers(this.list);
                         this.$ls.set('data',rep);
                  });
@@ -651,33 +677,54 @@
             },
             filterDam(){
                 this.map.spin(true);
-                let list = this.list.filter((l)=>{
-                     let b = true;
-                     b = this.layer.state.indexOf(l.isGisConfirm)>-1;
-                    if(!b){
-                        return b;
-                    }
-                    switch(this.layer.mode){
-                        case '全国':{
-                         b = true;
-                        }break;
-                        case '水利':
-                        case '电力':
-                         b = l.domination == this.layer.mode;
-                         break;
-                         default:
-                         b = (l.domination !='电力'&& l.domination!='水利');
-                    }
-                    if(!b){
-                        return b;
-                    }
+                let list = [];
+                if(this.legend == 'normal') {
+                     list = this.list.filter((l)=>{
+                         let b = true;
+                         b = this.layer.state.indexOf(l.isGisConfirm)>-1;
+                        if(!b){
+                            return b;
+                        }
+                        switch(this.layer.mode){
+                            case '全国':{
+                             b = true;
+                            }break;
+                            case '水利':
+                            case '电力':
+                             b = l.domination == this.layer.mode;
+                             break;
+                             default:
+                             b = (l.domination !='电力'&& l.domination!='水利');
+                        }
+                        if(!b){
+                            return b;
+                        }
 
-                    l.isShow = this.layer.legend.indexOf(l.kind)>-1;
-                    return b;
+                        l.isShow = this.layer.legend.indexOf(l.kind)>-1;
+                        return b;
 
-                });
-                this.dam.list = list;
-                setTimeout(()=>this.renderMarkers(list),100);
+                    });
+                    this.dam.list = list;
+                    setTimeout(()=>this.renderMarkers(list),100);
+
+                }else{
+                    list = this.dam.list.filter(d=>{
+
+                            let k;
+                         if(d.kind.indexOf('在建')>-1) {
+                                k = '在建'
+                           }else if(d.kind.indexOf('前期')>-1){
+                                k = '前期'
+                           }else if(d.kind.indexOf('规划')>-1){
+                                k = '规划'
+                           }else{
+                                k = '已建'
+                           }
+                            return this.layer.legend2.indexOf(k) > -1;
+                    })
+                    setTimeout(()=>this.renderMarkers(list,'river'),100);
+                }
+
 
             },
             flyTo({dbid}){
@@ -871,7 +918,7 @@
                 this.currentPage = p;
             },
             onRegionCheck(checked) {
-
+                 this.regionLayers.clearLayers();
                 this.regionCheck = true;
                 this.map.spin(true);
                 setTimeout(()=>{
@@ -892,7 +939,7 @@
                         return 'nyc:river_dam'
                     })
 
-                     this.wmsLayer = L.tileLayer.wms(`http://183.247.147.228:8006/geoserver/nyc/wms?CQL_FILTER=${filters.join(';')}&`, {
+                     this.wmsLayer = L.tileLayer.wms(`http://api.rsafety.com.cn:8006/geoserver/nyc/wms?CQL_FILTER=${filters.join(';')}&`, {
                         layers:layers.join(','),
                         crs:L.CRS.EPSG4326,
                         format:'image/png'
@@ -906,16 +953,18 @@
                     this.map.removeLayer(this.normal);
                     this.map.removeLayer(this.earth);
 
-                    let markers = this.dam.list.filter(l=>{
+                    let markers = this.list.filter(l=>{
                          if(l.longitude&&l.latitude) {
                             let b = pip.pointInLayer([parseFloat(l.longitude),parseFloat(l.latitude)],this.riverRegionLayers);
                             return b.length>0
                          }else{
                             return false
                          }
-                    })
+                    });
 
-                    this.renderMarkers(markers);
+                    this.dam.list = markers;
+                    this.legend = 'river';
+                    this.renderMarkers(markers,'river');
                 }else{
                     this.renderMarkers([]);
                 }
@@ -925,8 +974,10 @@
                 this.onCloseLeft();
                 if(this.regionCheck) {
                     this.map.spin(true);
+                    this.map.removeLayer(this.wmsLayer);
                     this.normal.addTo(this.map);
-
+                    this.dam.list = this.list;
+                    this.legend = 'normal';
                     setTimeout(()=>{
                         this.riverRegionLayers.clearLayers();
                         this.renderMarkers(this.dam.list);

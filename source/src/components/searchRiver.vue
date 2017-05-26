@@ -2,20 +2,26 @@
     <div>
         <div class='header'>
             <span class="title">河流流域查询</span>
-            <!--<el-input-->
-                    <!--:icon='icons'-->
-                    <!--:on-icon-click='onIconClick'-->
-                    <!--size='small' placeholder='请输入河流流域名称' v-model='query' style='width:80%;' ></el-input>-->
             <el-button style='float:right;color:#20a0ff;margin-top:2px;' @click='onClose' type="text" icon='circle-close'></el-button>
         </div>
         <div  class='search-river' v-loading.body='loading'>
-            <el-tree style='width:100%' :render-content="renderContent" :data='filterData'  highlight-current accordion   :props="props" >
-            </el-tree>
+
+            <el-tabs v-model="activeName">
+                <el-tab-pane label="河流流域" name="first">
+                    <el-tree :expand-on-click-node='false' style='width:100%' :render-content="renderContent" :data='filterData'  highlight-current accordion   :props="props" >
+                    </el-tree>
+                    <el-dialog size='large' top='5%' :visible='dialog' :before-close='onCloseDialog' :title='title' style='text-align:center;'>
+                        <iframe v-if='dialog' style="border:none;height:420px;width:100%;" :src="'/profile.html?ids='+ids"></iframe>
+                    </el-dialog>
+                </el-tab-pane>
+                <el-tab-pane label="自定义剖面" name="second">
+                    <x-section v-if='activeName == "second"'></x-section>
+                </el-tab-pane>
+            </el-tabs>
+
         </div>
 
-        <el-dialog size='large' top='5%' :visible='dialog' :before-close='onCloseDialog' :title='title' style='text-align:center;'>
-            <iframe v-if='dialog' style="border:none;height:420px;width:100%;" :src="'/profile.html?ids='+ids"></iframe>
-        </el-dialog>
+
     </div>
 </template>
 <style lang='less'>
@@ -38,6 +44,7 @@
 </style>
 <script>
     import { getRiverDam, getRivers,querySubRiverIDs } from '../modules/service.js';
+    import xSection from './section.vue';
 
     export default{
         store:['container','rightSpan','dam','_map'],
@@ -52,7 +59,8 @@
                 loading:true,
                 dialog:false,
                 ids:'',
-                title:''
+                title:'',
+                activeName:'first'
             }
         },
         computed:{
@@ -112,38 +120,45 @@
                this.container.right = false;
                 this._map.spin(true);
                querySubRiverIDs({riverId:node.id}).then(rep=>{
+                    this._map.spin(false);
                     if(rep){
                         let ll = rep.objInfo.dataList.map(d=>String(d.RIVERID));
+                        ll.push(node.id);
                         if(ll.length>0){
                              this.dam.list.forEach(d=>{
                                 if(ll.indexOf(d.riverid)>-1){
                                     list.push(d);
                                 }
                             });
+                        debugger
+                            if(type == 'section' && list.length <=2) {
+                                return  this.$message({
+                                  message: "相关大坝数量少于2个，无法绘制剖面，请选择其他流域查看！",
+                                  type: 'warning'
+                                });
+                            }
 
                              if(list.length>0){
 
                                 if(type == 'section') {
+
                                     this.ids = list.map(l=>l.dbid).join(',');
                                     this.title = node.name;
                                     this.dialog = true;
 
                                 }else{
-                                        this.rightSpan.list = list;
-                                        this.rightSpan.name = node.RiverName;
-                                        this.container.right = true;
+                                    this.rightSpan.list = list;
+                                    this.rightSpan.name = node.name;
+                                    this.container.right = true;
                                 }
 
 
                             }
                         }
                     }
-                    this._map.spin(false);
                })
             },
-            showSection(data) {
-                debugger
-            },
+
             onIconClick(){this.query =''},
             renderContent(h, { node, data, store }){
             var self = this;
@@ -157,6 +172,11 @@
                         },
                         style: {
                             fontSize:'14px'
+                        },
+                        on:{
+                            click(e){
+                                e.stopPropagation();
+                            }
                         }
                     }),
                     h('i',{
@@ -164,6 +184,9 @@
                         'fa':true,
                         'fa-search':true
                        },
+                        domProps:{
+                            innerHTML:'查看'
+                        },
                        on:{
                             click(e){
                                 e.stopPropagation();
@@ -176,6 +199,9 @@
                         'fa':true,
                         'fa-bar-chart':true
                        },
+                       domProps:{
+                            innerHTML:'剖面'
+                        },
                        on:{
                             click(e){
                                 e.stopPropagation();
@@ -186,6 +212,9 @@
                 ])
              ])
             }
+        },
+        components:{
+            xSection
         },
         mounted(){
             $('.search-river').slimScroll({ height: document.documentElement.clientHeight - 37 });

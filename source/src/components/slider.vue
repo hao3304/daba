@@ -216,12 +216,6 @@
                             name:'专题分析',
                             icon:'fa fa-photo',
                             url:'theme'
-                        },
-                        {
-                            id:'3-4',
-                            name:'自定义剖面',
-                            icon:'fa fa-bar-chart',
-                            url:'section'
                         }
                     ]
                 },{

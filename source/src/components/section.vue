@@ -1,9 +1,5 @@
 <template>
     <div>
-        <div class='header'>
-            <span class='title'>自定义剖面</span>
-            <el-button style='float:right;color:#20a0ff;margin-top:2px;' @click='onClose' type="text" icon='circle-close'></el-button>
-        </div>
         <div class="section" v-loading.body='loading'>
             <el-table :data='data' :highlight-current-row='true'>
                 <el-table-column label='名称' prop='name'></el-table-column>
