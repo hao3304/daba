@@ -578,7 +578,7 @@
                             -moz-transform:rotate(${m.angle||0}deg);
                             -webkit-transform:rotate(${m.angle||0}deg);
                             -o-transform:rotate(${m.angle||0}deg);
-                             ">`});
+                             "><span class='tag'>${m.dbmc}</span>`});
                         }
 
                         let marker = new L.marker([lat,lng],{
@@ -606,17 +606,20 @@
                         marker.bindPopup('<iframe src="/detail.html?id='+m.dbid+'" style="border:none;width:360px;height:300px;" ></iframe>',{maxWidth:352,className:'custom-popup',minHeight:300});
 
                         marker.on('mouseover',(m)=>{
+                        if(this.legend !='river') {
                             $(m.target._icon).addClass('marker-hover');
+                        }
 
 
-                            if(!this.tooltip){
-                                 m.target.bindTooltip(m.target.options.name,{direction:'top',offset:[0,-10]});
-                                 m.target.openTooltip();
-                            }
+                        if(!this.tooltip){
+                             m.target.bindTooltip(m.target.options.name,{direction:'top',offset:[0,-10]});
+                             m.target.openTooltip();
+                        }
                         }).on('mouseout',(m)=>{
                            $(m.target._icon).removeClass('marker-hover');
                             m.target.unbindTooltip();
                         });
+
 
                         if(m.area){
                             let latlngs = this._getGeo(m.area,',');
